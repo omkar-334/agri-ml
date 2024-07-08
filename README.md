@@ -12,6 +12,8 @@ First, download the source code and the weights of the pre-trained model, as sho
 ----
 Then set the parameters.
 
+![image]()
+
 ----
 
 Finally, train the model
