@@ -7,6 +7,8 @@ How to use
 ------
 First, download the source code and the weights of the pre-trained model, as shown in the following figure.
 
+![image](https://github.com/fightpotato/Tswin-F/blob/main/figure/Download.gif)
+
 ----
 Then set the parameters.
 
