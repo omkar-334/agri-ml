@@ -16,12 +16,14 @@ Then set the parameters.
 
 ----
 
-Finally, train the model
+Finally, train the model.It should be noted that when you use the code, you need to customize the data set into train and val folders and set the number of classification categories of the data.
 
 ![image](https://github.com/fightpotato/Tswin-F/blob/main/figure/Train.gif)
 
 ----
 All operations are summarized in a Gif image for easy demonstration.
+
+![iamge](https://github.com/fightpotato/Tswin-F/blob/main/figure/complete%20process.gif)
 
 ----
 
