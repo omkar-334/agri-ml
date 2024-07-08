@@ -12,7 +12,7 @@ First, download the source code and the weights of the pre-trained model, as sho
 ----
 Then set the parameters.
 
-![image]()
+![image](https://github.com/fightpotato/Tswin-F/blob/main/figure/Param.gif)
 
 ----
 
