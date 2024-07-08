@@ -18,6 +18,8 @@ Then set the parameters.
 
 Finally, train the model
 
+![image](https://github.com/fightpotato/Tswin-F/blob/main/figure/Train.gif)
+
 ----
 All operations are summarized in a Gif image for easy demonstration.
 
