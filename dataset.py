@@ -40,16 +40,16 @@ transform = transforms.Compose(
 )
 
 # df = pd.read_csv("train.csv")
-df = pd.read_csv("/kaggle/input/cassava-leaf-disease-classification/train.csv")
+# df = pd.read_csv("/kaggle/input/cassava-leaf-disease-classification/train.csv")
 
-print(df.label.value_counts())
-balanced_df = pd.DataFrame()
+# print(df.label.value_counts())
+# balanced_df = pd.DataFrame()
 
-for label in df["label"].unique():
-    label_df = df[df["label"] == label]
-    if len(label_df) > 1000:
-        _, sampled_df = train_test_split(label_df, test_size=1000, random_state=42, stratify=label_df["label"])
-    balanced_df = pd.concat([balanced_df, sampled_df])
+# for label in df["label"].unique():
+#     label_df = df[df["label"] == label]
+#     if len(label_df) > 1000:
+#         _, sampled_df = train_test_split(label_df, test_size=1000, random_state=42, stratify=label_df["label"])
+#     balanced_df = pd.concat([balanced_df, sampled_df])
 
 
 class Dataset(Dataset):
@@ -70,14 +70,14 @@ class Dataset(Dataset):
         return image, label
 
 
-train_df, temp_df = train_test_split(df, test_size=0.3, random_state=42, stratify=df["label"])
-val_df, test_df = train_test_split(temp_df, test_size=0.5, random_state=42, stratify=temp_df["label"])
+# train_df, temp_df = train_test_split(df, test_size=0.3, random_state=42, stratify=df["label"])
+# val_df, test_df = train_test_split(temp_df, test_size=0.5, random_state=42, stratify=temp_df["label"])
 
 
-train_dataset = Dataset(train_df)
-test_dataset = Dataset(test_df)
-val_dataset = Dataset(val_df)
+# train_dataset = Dataset(train_df)
+# test_dataset = Dataset(test_df)
+# val_dataset = Dataset(val_df)
 
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
+# train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+# test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+# val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
