@@ -15,7 +15,6 @@ import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
 import torch.nn.init as init
-from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy
 from timm.utils import AverageMeter, accuracy
 from torch.utils.tensorboard import SummaryWriter
 
