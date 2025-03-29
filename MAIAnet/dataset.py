@@ -14,7 +14,7 @@
 # five balanced categories, and the CMD category was randomly selected
 # from 13,158 images in the raw data. Notably, CMD data were selected
 # without augmentation. Following preprocessing, the images had a resolution
-# of 448 × 448, as outlined in Table 2.
+# of 448 x 448, as outlined in Table 2.
 
 
 # https://www.kaggle.com/code/omkar334/maianet-cassava-leaf-disease/edit
