@@ -12,7 +12,7 @@ class SoyaTrans(nn.Module):
         self.inception = InceptionV7(128)
         self.stage1 = Stage1()
         self.stage2 = Stage2()
-        self.classifier = Classifier(num_classes)
+        self.classifier = Classifier(num_classes=num_classes)
 
     def forward(self, x):
         x = self.vgg(x)
