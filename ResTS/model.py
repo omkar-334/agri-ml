@@ -1,12 +1,15 @@
+import numpy as np
 import pandas as pd
 from keras import optimizers
 from keras.applications import Xception
 from keras.applications.xception import preprocess_input
 from keras.layers import Activation, Add, BatchNormalization, Conv2D, Conv2DTranspose, Dense, Flatten, Reshape, SeparableConv2D, UpSampling2D, ZeroPadding2D, concatenate
 from keras.models import Model
+from sklearn.metrics import classification_report
+from tensorflow.keras.callbacks import Callback
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # from keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
 def load_generators(train_path, val_path, batch_size=16):
@@ -257,18 +260,28 @@ def train_model(model, train_path, val_path, batch_size=16, lr=1e-4, epochs=35):
 
     losses = {"out1": "categorical_crossentropy", "out2": "categorical_crossentropy"}
     alpha = 0.4
-    lossWeights = {"out1": alpha, "out2": (1.0 - alpha)}
+    weights = {"out1": alpha, "out2": (1.0 - alpha)}
+    metrics = {"out1": "accuracy", "out2": "accuracy"}
+
     # model.compile(optimizer=optimizers.SGD(learning_rate=1e-4, momentum=0.9), loss=losses, loss_weights=lossWeights, metrics=["accuracy"])
-    model.compile(optimizer=optimizers.SGD(learning_rate=lr, momentum=0.9), loss=losses, loss_weights=lossWeights, metrics={"out1": "accuracy", "out2": "accuracy"})
+    model.compile(
+        optimizer=optimizers.SGD(learning_rate=lr, momentum=0.9),
+        loss=losses,
+        loss_weights=weights,
+        metrics=metrics,
+    )
 
     # model.summary()
 
-    history = model.fit(train(), steps_per_epoch=train_steps, epochs=epochs, validation_data=valid(), validation_steps=val_steps)
+    # history = model.fit(train(), steps_per_epoch=train_steps, epochs=epochs, validation_data=valid(), validation_steps=val_steps)
+    history = model.fit(
+        train(),
+        steps_per_epoch=train_steps,
+        epochs=epochs,
+        validation_data=valid(),
+        validation_steps=val_steps,
+    )
 
     df = pd.DataFrame(history.history)
     df.to_csv("ResTS15epochs.csv")
-    try:
-        model.save("ResTS.h5")
-    except:
-        print("Check if the model has been saved!")
     return model, history
