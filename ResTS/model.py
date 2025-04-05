@@ -8,9 +8,6 @@ from keras.models import Model
 # from keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-input_shape = (224, 224, 3)
-nbr_of_classes = 38
-
 
 def load_generators(train_path, val_path, batch_size=16):
     train_datagen = ImageDataGenerator(
@@ -23,13 +20,15 @@ def load_generators(train_path, val_path, batch_size=16):
     return train_generator, val_generator
 
 
-def load_model():
+# For plantvillage dataset, the number of classes is 38 and the input shape is (224, 224, 3)
+# For sugarcane dataset, the number of classes is 5 and the input shape is (224, 224, 3)
+def load_model(num_classes=38, input_shape=(224, 224, 3)):
     # Encoder Start
     base_model1 = Xception(include_top=False, weights="imagenet", input_shape=input_shape)
     x1_0 = base_model1.output
     x1_0 = Flatten(name="Flatten1")(x1_0)
     dense1 = Dense(256, name="fc1", activation="relu")(x1_0)
-    x = classif_out_encoder1 = Dense(38, name="out1", activation="softmax")(dense1)  # Latent Representation / Bottleneck
+    x = classif_out_encoder1 = Dense(num_classes, name="out1", activation="softmax")(dense1)  # Latent Representation / Bottleneck
 
     # Get Xception's tensors for skip connection.
     conv14 = base_model1.get_layer("block14_sepconv2_act").output
@@ -236,13 +235,12 @@ def load_model():
     x2_0 = base_model2(mask)
     x2_0 = Flatten(name="Flatten2")(x2_0)
     x2_1 = Dense(256, name="fc2", activation="relu")(x2_0)
-    classif_out_encoder2 = Dense(nbr_of_classes, name="out2", activation="softmax")(x2_1)
+    classif_out_encoder2 = Dense(num_classes, name="out2", activation="softmax")(x2_1)
     model = Model(base_model1.input, [classif_out_encoder1, classif_out_encoder2])
     return model
 
 
-def train_model(train_path, val_path, batch_size=16, lr=1e-4, epochs=35):
-    model = load_model()
+def train_model(model, train_path, val_path, batch_size=16, lr=1e-4, epochs=35):
     train_generator, valid_generator = load_generators(train_path, val_path, batch_size)
     train_steps = len(train_generator) // batch_size
     val_steps = len(valid_generator) // batch_size
