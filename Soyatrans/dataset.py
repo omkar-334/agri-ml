@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 from torchvision import transforms
 
 transform = transforms.Compose([
-    transforms.Resize((448, 448)),  # Resize to input size of MaiaNet
+    transforms.Resize((224, 224)),  # Resize to input size of MaiaNet
     # transforms.RandomHorizontalFlip(p=0.5),  # Horizontal flipping
     # transforms.RandomVerticalFlip(p=0.5),  # Vertical flipping
     transforms.ToTensor(),  # Convert to tensor before adding noise

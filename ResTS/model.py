@@ -243,8 +243,8 @@ def load_model(num_classes=38, input_shape=(224, 224, 3)):
     return model
 
 
-def train_model(model, train_path, val_path, batch_size=16, lr=1e-4, epochs=35):
-    train_generator, valid_generator = load_generators(train_path, val_path, batch_size)
+# train_generator, valid_generator = load_generators(train_path, val_path, batch_size)
+def train_model(model, train_generator, valid_generator, batch_size=16, lr=1e-4, epochs=35):
     train_steps = len(train_generator) // batch_size
     val_steps = len(valid_generator) // batch_size
 
@@ -271,9 +271,6 @@ def train_model(model, train_path, val_path, batch_size=16, lr=1e-4, epochs=35):
         metrics=metrics,
     )
 
-    # model.summary()
-
-    # history = model.fit(train(), steps_per_epoch=train_steps, epochs=epochs, validation_data=valid(), validation_steps=val_steps)
     history = model.fit(
         train(),
         steps_per_epoch=train_steps,
@@ -284,4 +281,29 @@ def train_model(model, train_path, val_path, batch_size=16, lr=1e-4, epochs=35):
 
     df = pd.DataFrame(history.history)
     df.to_csv("ResTS15epochs.csv")
+    validate_model(model, valid_generator, batch_size)
     return model, history
+
+
+def validate_model(model, valid_generator, batch_size=16):
+    val_steps = len(valid_generator) // batch_size
+
+    def valid():
+        while True:
+            x, y = next(valid_generator)
+            yield x, {"out1": y, "out2": y}
+
+    y_true, y_pred = [], []
+    valid_generator.reset()
+
+    for _ in range(val_steps):
+        x_batch, y_batch = next(valid())
+        preds = model.predict(x_batch, verbose=0)
+        y_true.extend(np.argmax(y_batch["out2"], axis=1))
+        y_pred.extend(np.argmax(preds[1], axis=1))
+
+    report_dict = classification_report(y_true, y_pred, output_dict=True)
+    report_df = pd.DataFrame(report_dict).transpose()
+    report_df.to_csv("classification_report.csv", float_format="%.4f")
+
+    return model
