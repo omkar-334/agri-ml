@@ -6,7 +6,6 @@ from keras.applications.xception import preprocess_input
 from keras.layers import Activation, Add, BatchNormalization, Conv2D, Conv2DTranspose, Dense, Flatten, Reshape, SeparableConv2D, UpSampling2D, ZeroPadding2D, concatenate
 from keras.models import Model
 from sklearn.metrics import classification_report
-from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # from keras.preprocessing.image import ImageDataGenerator
@@ -244,7 +243,7 @@ def load_model(num_classes=38, input_shape=(224, 224, 3)):
 
 
 # train_generator, valid_generator = load_generators(train_path, val_path, batch_size)
-def train_model(model, train_generator, valid_generator, batch_size=16, lr=1e-4, epochs=35):
+def train_model(model, train_generator, valid_generator, batch_size=16, lr=0.0001, epochs=35, alpha=0.4):
     train_steps = len(train_generator) // batch_size
     val_steps = len(valid_generator) // batch_size
 
@@ -259,7 +258,6 @@ def train_model(model, train_generator, valid_generator, batch_size=16, lr=1e-4,
             yield x, {"out1": y, "out2": y}
 
     losses = {"out1": "categorical_crossentropy", "out2": "categorical_crossentropy"}
-    alpha = 0.4
     weights = {"out1": alpha, "out2": (1.0 - alpha)}
     metrics = {"out1": "accuracy", "out2": "accuracy"}
 

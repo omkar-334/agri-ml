@@ -121,7 +121,7 @@ def conv3x3(in_planes, out_planes, stride=1):
 
 class SELayer(nn.Module):
     def __init__(self, channel, reduction=16):
-        super(SELayer, self).__init__()
+        super(self).__init__()
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Sequential(nn.Linear(channel, channel // reduction, bias=False), nn.ReLU(), nn.Linear(channel // reduction, channel, bias=False), nn.Sigmoid())
 
@@ -172,7 +172,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class MaiaNet(nn.Module):
     def __init__(self, num_classes):
-        super(MaiaNet, self).__init__()
+        super(self).__init__()
         self.head = HeadBlock(3, 64)  # Input: 448×448×3 -> 112×112×64
         self.anti_aliasing_1 = AntiAliasingBlock(64, 64, downsample=False)  # 112×112×64 -> 112×112×64
         self.maia_1 = MaiaBlock(64, 256)  # 112×112×64 -> 112×112×256
@@ -222,7 +222,7 @@ class MaiaNet(nn.Module):
 
 class HeadBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
-        super(HeadBlock, self).__init__()
+        super(self).__init__()
         self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=7, padding=3, stride=2)
         self.bn = nn.BatchNorm2d(out_channels)
         self.pool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
@@ -237,7 +237,7 @@ class HeadBlock(nn.Module):
 
 class MultiAttention(nn.Module):
     def __init__(self, in_channels):
-        super(MultiAttention, self).__init__()
+        super(self).__init__()
 
         # https://github.com/hujie-frank/SENet/blob/master/README.md
         self.se = SELayer(in_channels, reduction=16)
