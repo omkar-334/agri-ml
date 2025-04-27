@@ -6,7 +6,8 @@ from lime import lime_image
 from pytorch_grad_cam import GradCAM, GradCAMPlusPlus, ScoreCAM
 from pytorch_grad_cam.utils.image import show_cam_on_image
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
-
+import os
+from PIL import Image
 
 def tensor_to_rgb_image(tensor):
     img = tensor.clone().detach().cpu()
@@ -38,38 +39,51 @@ def lime_explanation(image, model, class_index):
     return temp
 
 
-def plot(model, dataset, index):
-    image, class_index = dataset[index]
+def plot(model, image,image_path,  class_index, target_layers, output_dir="data/cam_outputs", verbose=False):
+    # image, class_index = dataset[index]
+    base_name = os.path.splitext(os.path.basename(image_path))[0]
+    os.makedirs(output_dir, exist_ok=True)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     input_tensor = image.unsqueeze(0)
+    input_tensor = input_tensor.to(device)
 
     rgb_img = tensor_to_rgb_image(image)
-
-    # Target layer for CAM
-    # target_layers = [model.vgg.vgg[8]]
-    # target_layers = [model.inception.stage4[0]]
-    target_layers = [model.stage1.downsample]
+    
     target = [ClassifierOutputTarget(class_index)]
 
-    lime_img = lime_explanation(image, model, class_index)
+    # lime_img = lime_explanation(image, model, class_index)
+    # lime_img = lime_img.squeeze()  # remove dimensions like (1, 1, 3)
+    # if lime_img.dtype != np.uint8:
+    #     lime_img = (lime_img * 255).clip(0, 255).astype(np.uint8)  # scale to 0-255 if float
+
+    # lime_path = os.path.join(output_dir, f"{base_name}_lime.jpg")
+    # Image.fromarray(lime_img).save(lime_path)
+    
     cams = {
         "Grad-CAM": GradCAM(model=model, target_layers=target_layers),
         "Grad-CAM++": GradCAMPlusPlus(model=model, target_layers=target_layers),
         "Score-CAM": ScoreCAM(model=model, target_layers=target_layers),
     }
 
-    cam_results = {"Original": rgb_img}
+    original_path = os.path.join(output_dir, f"{base_name}_original.jpg")
+    Image.fromarray((rgb_img * 255).astype(np.uint8)).save(original_path)
+
+    # cam_results = {"Original": rgb_img}
     for name, cam_method in cams.items():
         grayscale_cam = cam_method(input_tensor=input_tensor, targets=target)[0]
         cam_image = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
-        cam_results[name] = cam_image
+        # cam_results[name] = cam_image
+        save_path = os.path.join(output_dir, f"{base_name}_{name}.jpg")
+        Image.fromarray(cam_image).save(save_path)
 
-    cam_results["LIME"] = lime_img
+    # cam_results["LIME"] = lime_img
 
-    plt.figure(figsize=(16, 8))
-    for idx, (name, img) in enumerate(cam_results.items()):
-        plt.subplot(2, 3, idx + 1)
-        plt.imshow(img)
-        plt.title(name)
-        plt.axis("off")
-    plt.tight_layout()
-    plt.show()
+    # if verbose:
+    #     plt.figure(figsize=(16, 8))
+    #     for idx, (name, img) in enumerate(cam_results.items()):
+    #         plt.subplot(2, 3, idx + 1)
+    #         plt.imshow(img)
+    #         plt.title(name)
+    #         plt.axis("off")
+    #     plt.tight_layout()
+    #     plt.show()

@@ -59,15 +59,15 @@ _C.MODEL.SWIN.PATCH_NORM = True
 # -----------------------------------------------------------------------------
 _C.TRAIN = CN()
 _C.TRAIN.START_EPOCH = 0
-_C.TRAIN.EPOCHS = 300
-_C.TRAIN.WARMUP_EPOCHS = 30
+_C.TRAIN.EPOCHS = 35
+_C.TRAIN.WARMUP_EPOCHS = 5
 _C.TRAIN.WEIGHT_DECAY = 0.005
-_C.TRAIN.BASE_LR = 4e-4
-_C.TRAIN.WARMUP_LR = 4e-5
-_C.TRAIN.MIN_LR = 1e-6
+_C.TRAIN.BASE_LR = 2e-4
+_C.TRAIN.WARMUP_LR = 2e-6
+_C.TRAIN.MIN_LR = 2e-4
 _C.TRAIN.CLIP_GRAD = 5.0
 # _C.TRAIN.AUTO_RESUME = True
-# _C.TRAIN.ACCUMULATION_STEPS = 0
+_C.TRAIN.ACCUMULATION_STEPS = 0
 # _C.TRAIN.USE_CHECKPOINT = False
 
 # LR scheduler
@@ -85,7 +85,7 @@ _C.TRAIN.OPTIMIZER.MOMENTUM = 0.9  # SGD Momentum
 
 
 # Pretraining
-_C.TRAIN.USE_DRLOC = True
+_C.TRAIN.USE_DRLOC = False
 _C.TRAIN.LAMBDA_DRLOC = 0.20
 _C.TRAIN.SAMPLE_SIZE = 64
 _C.TRAIN.USE_NORMAL = False
@@ -123,7 +123,7 @@ _C.TEST.CROP = True  # Whether to use center crop when testing
 # Misc
 # -----------------------------------------------------------------------------
 _C.AMP_OPT_LEVEL = ""
-_C.OUTPUT = ""
+_C.OUTPUT = "output"
 _C.TAG = "default"
 _C.SAVE_FREQ = 5
 _C.PRINT_FREQ = 10

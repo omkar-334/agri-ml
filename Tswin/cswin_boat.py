@@ -303,6 +303,7 @@ class ContentAttention(nn.Module):
         # B_, W, H, C = x.shape
         # x = x.view(B_,W*H,C)
         B_, N, C = x.shape
+        # print(x.shape)
 
         qkv = self.qkv(x).reshape(B_, N, 3, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)  # 3, B_, self.num_heads,N,D
 

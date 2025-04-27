@@ -50,10 +50,10 @@ def load_checkpoint_ft(pretrain_path, model, logger):
     return max_accuracy
 
 
-def save_checkpoint_best(config, epoch, model, max_accuracy, optimizer, lr_scheduler, logger):
+def save_checkpoint_best(config, epoch, model, max_accuracy, save_path, logger):
     save_state = {"model": model.state_dict(), "max_accuracy": max_accuracy, "epoch": epoch, "config": config}
 
-    save_path = os.path.join(config.OUTPUT, "best_model.pth")
+    save_path = os.path.join(config.OUTPUT, save_path)
     logger.info(f"{save_path} saving......")
     torch.save(save_state, save_path)
     logger.info(f"{save_path} saved !!!")

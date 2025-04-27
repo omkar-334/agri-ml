@@ -63,11 +63,11 @@ def build_dataset(df, path, transform=build_transform(True), test=False):
 
 def build_loader(train_dataset, val_dataset, batch_size, test_dataset=None):
     if test_dataset:
-        test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
+        test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
     else:
         test_loader = None
 
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
     return train_loader, test_loader, val_loader

@@ -7,9 +7,19 @@ from keras.layers import Activation, Add, BatchNormalization, Conv2D, Conv2DTran
 from keras.models import Model
 from sklearn.metrics import classification_report
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-
+from tensorflow.keras.applications import Xception
+from tensorflow.keras.layers import (
+    Dense, Flatten, Add, Reshape, SeparableConv2D, BatchNormalization,
+    Activation, concatenate, UpSampling2D, Conv2D, Conv2DTranspose, ZeroPadding2D
+)
+from tensorflow.keras.models import Model, clone_model
+import tensorflow as tf
 # from keras.preprocessing.image import ImageDataGenerator
-
+from tensorflow.keras.applications import Xception
+from tensorflow.keras.layers import (Flatten, Dense, Add, Reshape, SeparableConv2D,
+                                     BatchNormalization, Activation, concatenate, UpSampling2D,
+                                     Conv2D, Conv2DTranspose, ZeroPadding2D)
+from tensorflow.keras.models import Model
 
 def load_generators(train_path, val_path, batch_size=16):
     train_datagen = ImageDataGenerator(
@@ -24,222 +34,111 @@ def load_generators(train_path, val_path, batch_size=16):
 
 # For plantvillage dataset, the number of classes is 38 and the input shape is (224, 224, 3)
 # For sugarcane dataset, the number of classes is 5 and the input shape is (224, 224, 3)
+
+def rename_model(model, new_name):
+    with tf.name_scope(new_name):
+        return clone_model(model)
+
+
+def resize_like(tensor, ref):
+    return tf.image.resize(tensor, size=(tf.shape(ref)[1], tf.shape(ref)[2]), method='bilinear')
+
+
+def sep_block(x, filters, skip_conn, block_name, add_input=None, upsample=False, suffix=""):
+    if upsample:
+        x = UpSampling2D(size=(2, 2), interpolation="bilinear", name=f"{block_name}_upsample_{suffix}")(x)
+
+    x = Activation("relu", name=f"{block_name}_act1_{suffix}")(x)
+    x = SeparableConv2D(filters, (3, 3), padding="same", name=f"{block_name}_sepconv1_{suffix}")(x)
+    x = BatchNormalization(name=f"{block_name}_bn1_{suffix}")(x)
+
+    skip_conn = Lambda(
+        lambda s: tf.image.resize(s[0], size=(tf.shape(s[1])[1], tf.shape(s[1])[2]), method='bilinear'),
+        output_shape=lambda shapes: (shapes[1][0], None, None, shapes[0][-1]),
+        name=f"{block_name}_resize_skip_{suffix}"
+    )([skip_conn, x])
+
+    x = concatenate([skip_conn, x], axis=-1, name=f"{block_name}_concat_{suffix}")
+
+    x = Activation("relu", name=f"{block_name}_act2_{suffix}")(x)
+    x = SeparableConv2D(filters, (3, 3), padding="same", name=f"{block_name}_sepconv2_{suffix}")(x)
+    x = BatchNormalization(name=f"{block_name}_bn2_{suffix}")(x)
+
+    if add_input is not None:
+        add_input = Lambda(
+            lambda s: tf.image.resize(s[0], size=(tf.shape(s[1])[1], tf.shape(s[1])[2]), method='bilinear'),
+            output_shape=lambda shapes: (shapes[1][0], None, None, shapes[0][-1]),
+            name=f"{block_name}_resize_add_{suffix}"
+        )([add_input, x])
+
+        if add_input.shape[-1] != filters:
+            add_input = Conv2D(filters, (1, 1), padding="same", name=f"{block_name}_proj_add_{suffix}")(add_input)
+
+        x = Add(name=f"{block_name}_add_{suffix}")([add_input, x])
+    
+    return x
+
+
 def load_model(num_classes=38, input_shape=(224, 224, 3)):
-    # Encoder Start
-    base_model1 = Xception(include_top=False, weights="imagenet", input_shape=input_shape)
-    x1_0 = base_model1.output
-    x1_0 = Flatten(name="Flatten1")(x1_0)
-    dense1 = Dense(256, name="fc1", activation="relu")(x1_0)
-    x = classif_out_encoder1 = Dense(num_classes, name="out1", activation="softmax")(dense1)  # Latent Representation / Bottleneck
+    base_model1 = Xception(include_top=False, weights="imagenet", input_shape=input_shape, name="xception_encoder")
+    x1_flat = Flatten(name="flatten_encoder1")(base_model1.output)
+    dense1 = Dense(256, activation="relu", name="dense_encoder1")(x1_flat)
+    out1 = Dense(num_classes, activation="softmax", name="output_encoder1")(dense1)
 
-    # Get Xception's tensors for skip connection.
-    conv14 = base_model1.get_layer("block14_sepconv2_act").output
-    conv13 = base_model1.get_layer("block13_sepconv2_bn").output
-    conv12 = base_model1.get_layer("block12_sepconv3_bn").output
-    conv11 = base_model1.get_layer("block11_sepconv3_bn").output
-    conv10 = base_model1.get_layer("block10_sepconv3_bn").output
-    conv9 = base_model1.get_layer("block9_sepconv3_bn").output
-    conv8 = base_model1.get_layer("block8_sepconv3_bn").output
-    conv7 = base_model1.get_layer("block7_sepconv3_bn").output
-    conv6 = base_model1.get_layer("block6_sepconv3_bn").output
-    conv5 = base_model1.get_layer("block5_sepconv3_bn").output
-    conv4 = base_model1.get_layer("block4_sepconv2_bn").output
-    conv3 = base_model1.get_layer("block3_sepconv2_bn").output
-    conv2 = base_model1.get_layer("block2_sepconv2_bn").output
-    conv1 = base_model1.get_layer("block1_conv2_act").output
+    convs = {
+        f"conv{i+1}": base_model1.get_layer(name).output for i, name in enumerate([
+            "block14_sepconv2_act", "block13_sepconv2_bn", "block12_sepconv3_bn",
+            "block11_sepconv3_bn", "block10_sepconv3_bn", "block9_sepconv3_bn",
+            "block8_sepconv3_bn", "block7_sepconv3_bn", "block6_sepconv3_bn",
+            "block5_sepconv3_bn", "block4_sepconv2_bn", "block3_sepconv2_bn",
+            "block2_sepconv2_bn", "block1_conv2_act"
+        ])
+    }
 
-    # Decoder Start
-    dense2 = Dense(256, activation="relu")(x)
+    x = Dense(256, activation="relu", name="bottleneck_dense")(out1)
+    x = Add(name="merge_dense")([dense1, x])
+    x = Dense(7 * 7 * 2048, name="reshape_dense")(x)
+    x = Reshape((7, 7, 2048), name="reshape_layer")(x)
 
-    x = Add(name="first_merge")([dense1, dense2])
-    x = Dense(7 * 7 * 2048)(x)
-    reshape1 = Reshape((7, 7, 2048))(x)
+    # Decoder blocks
+    c14 = sep_block(x, 1536, convs["conv1"], "block14", suffix="1")
+    add1 = sep_block(c14, 728, convs["conv2"], "block13", c14, upsample=True, suffix="2")
+    add2 = sep_block(add1, 728, convs["conv3"], "block12", add1, suffix="3")
+    add3 = sep_block(add2, 728, convs["conv4"], "block11", add2, suffix="4")
+    add4 = sep_block(add3, 728, convs["conv5"], "block10", add3, suffix="5")
+    add5 = sep_block(add4, 728, convs["conv6"], "block9", add4, suffix="6")
+    add6 = sep_block(add5, 728, convs["conv7"], "block8", add5, suffix="7")
+    add7 = sep_block(add6, 728, convs["conv8"], "block7", add6, suffix="8")
+    add8 = sep_block(add7, 728, convs["conv9"], "block6", add7, suffix="9")
+    add9 = sep_block(add8, 728, convs["conv10"], "block5", add8, suffix="10")
+    add10 = sep_block(add9, 728, convs["conv11"], "block4", add9, upsample=True, suffix="11")
 
-    # BLOCK 1
-    x = SeparableConv2D(2048, (3, 3), padding="same", name="block14_start")(reshape1)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    x = concatenate([conv14, x], axis=3)
-    x = SeparableConv2D(1536, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = c14 = Activation("relu")(x)
+    # Final decoder blocks with transpose conv
+    x = Conv2DTranspose(1, (3, 3), strides=(2, 2), name="upconv1")(add10)
+    x = sep_block(x, 256, convs["conv12"], "block3", suffix="12")
+    x = Conv2DTranspose(1, (3, 3), strides=(2, 2), name="upconv2")(x)
+    x = sep_block(x, 128, convs["conv13"], "block2", suffix="13")
 
-    # BLOCK 2
-    x = UpSampling2D((2, 2))(x)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(1024, (3, 3), padding="same", name="block13_start")(x)
-    x = BatchNormalization()(x)
-    x = concatenate([conv13, x], axis=3)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
+    x = Conv2D(64, (3, 3), padding="same", name="block1_conv1")(x)
+    x = BatchNormalization(name="block1_bn1")(x)
+    x = Activation("relu", name="block1_relu1")(x)
+    x = concatenate([convs["conv14"], x], axis=3, name="block1_concat")
+    x = ZeroPadding2D(name="block1_zeropad1")(x)
+    x = Conv2D(32, (3, 3), padding="same", name="block1_conv2")(x)
+    x = BatchNormalization(name="block1_bn2")(x)
+    x = Activation("relu", name="block1_relu2")(x)
+    x = UpSampling2D(name="block1_upsample")(x)
+    x = ZeroPadding2D(name="block1_zeropad2")(x)
+    x = Conv2D(2, 3, activation="relu", padding="same", name="block1_conv3")(x)
+    mask = Conv2D(3, 1, activation="sigmoid", name="mask_output")(x)
 
-    c1314 = Conv2D(728, (1, 1))(UpSampling2D()(c14))
-    x = add1 = Add()([c1314, x])
+    base_model2 = Xception(include_top=False, weights="imagenet", input_shape=input_shape, name="xception_decoder")
+    x2 = base_model2(mask)
+    x2_flat = Flatten(name="flatten_encoder2")(x2)
+    x2_dense = Dense(256, activation="relu", name="dense_encoder2")(x2_flat)
+    out2 = Dense(num_classes, activation="softmax", name="output_encoder2")(x2_dense)
 
-    # BLOCK 3
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same", name="blockmiddle_start")(x)
-    x = BatchNormalization()(x)
-    x = concatenate([conv12, x], axis=3)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = add2 = Add()([add1, x])
-    # BLOCK 4
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = concatenate([conv11, x], axis=3)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = add3 = Add()([add2, x])
-    # BLOCK 5
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = concatenate([conv10, x], axis=3)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = add4 = Add()([add3, x])
-    # BLOCK 6
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = concatenate([conv9, x], axis=3)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = add5 = Add()([add4, x])
-    # BLOCK 7
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = concatenate([conv8, x], axis=3)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = add6 = Add()([add5, x])
-    # BLOCK 8
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = concatenate([conv7, x], axis=3)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = add7 = Add()([add6, x])
-    # BLOCK 9
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = concatenate([conv6, x], axis=3)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = add8 = Add()([add7, x])
-    # BLOCK 10
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = concatenate([conv5, x], axis=3)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same", name="blockmiddle_end")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = add9 = Add()([add8, x])
-
-    # BLOCK 11
-    x = UpSampling2D((2, 2))(x)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same", name="block4_start")(x)
-    x = BatchNormalization()(x)
-    x = concatenate([conv4, x], axis=3)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(728, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-
-    c45 = Conv2D(728, (1, 1))(UpSampling2D()(add9))
-    x = add10 = Add()([c45, x])
-
-    # BLOCK 12
-    x = Conv2DTranspose(1, (3, 3), strides=(2, 2))(x)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(256, (3, 3), padding="valid", name="block3_start")(x)
-    x = BatchNormalization()(x)
-    x = concatenate([conv3, x], axis=3)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(256, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-
-    c34 = Conv2D(256, (3, 3), padding="valid")(Conv2DTranspose(1, (3, 3), strides=(2, 2))(add10))
-    x = add11 = Add()([c34, x])
-
-    # BLOCK 13
-    x = Conv2DTranspose(1, (3, 3), strides=(2, 2))(x)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(128, (3, 3), padding="valid", name="block2_start")(x)
-    x = BatchNormalization()(x)
-    x = concatenate([conv2, x], axis=3)
-    x = Activation("relu")(x)
-    x = SeparableConv2D(128, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-
-    c23 = Conv2D(128, (3, 3), padding="valid")(Conv2DTranspose(1, (3, 3), strides=(2, 2))(add11))
-    x = Add()([c23, x])
-
-    # BLOCK 14
-    x = Conv2D(64, (3, 3), padding="same", name="block1_start")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    x = concatenate([conv1, x], axis=3)
-    x = ZeroPadding2D()(x)
-    x = Conv2D(32, (3, 3), padding="same")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    x = UpSampling2D()(x)
-    x = ZeroPadding2D()(x)
-
-    x = Conv2D(
-        2,
-        3,
-        activation="relu",
-        padding="same",
-    )(x)
-    mask = x = Conv2D(3, 1, activation="sigmoid", name="Mask")(x)
-
-    base_model2 = Xception(include_top=False, weights="imagenet", input_shape=(224, 224, 3))
-    x2_0 = base_model2(mask)
-    x2_0 = Flatten(name="Flatten2")(x2_0)
-    x2_1 = Dense(256, name="fc2", activation="relu")(x2_0)
-    classif_out_encoder2 = Dense(num_classes, name="out2", activation="softmax")(x2_1)
-    model = Model(base_model1.input, [classif_out_encoder1, classif_out_encoder2])
-    return model
+    return Model(inputs=base_model1.input, outputs=[out1, out2], name="DualXceptionAutoencoder")
 
 
 # train_generator, valid_generator = load_generators(train_path, val_path, batch_size)

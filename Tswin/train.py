@@ -19,7 +19,7 @@ from timm.utils import AverageMeter, accuracy
 from torch.utils.tensorboard import SummaryWriter
 
 from build import build_model
-from config import parse_option
+from config import get_config
 from logger import create_logger
 from losses import cal_selfsupervised_loss
 from lr_scheduler import build_scheduler
@@ -38,32 +38,32 @@ def _weight_decay(init_weight, epoch, warmup_epochs=10, total_epoch=300):
     return cur_weight
 
 
-def main(data_loader_train, data_loader_val):
+def main(data_loader_train, data_loader_val, save_path="./best-modelforall.pth"):
     tb_write = SummaryWriter()
-    _, config = parse_option()
+    config = get_config()
 
     seed = config.SEED
     torch.manual_seed(seed)
     np.random.seed(seed)
     cudnn.benchmark = True
 
-    # linear scale the learning rate according to total batch size, may not be optimal
-    linear_scaled_lr = config.TRAIN.BASE_LR * config.DATA.BATCH_SIZE / 512.0
-    linear_scaled_warmup_lr = config.TRAIN.WARMUP_LR * config.DATA.BATCH_SIZE / 512.0
-    linear_scaled_min_lr = config.TRAIN.MIN_LR * config.DATA.BATCH_SIZE / 512.0
-    # gradient accumulation also need to scale the learning rate
-    if config.TRAIN.ACCUMULATION_STEPS > 1:
-        linear_scaled_lr = linear_scaled_lr * config.TRAIN.ACCUMULATION_STEPS
-        linear_scaled_warmup_lr = linear_scaled_warmup_lr * config.TRAIN.ACCUMULATION_STEPS
-        linear_scaled_min_lr = linear_scaled_min_lr * config.TRAIN.ACCUMULATION_STEPS
-    config.defrost()
-    config.TRAIN.BASE_LR = linear_scaled_lr
-    config.TRAIN.WARMUP_LR = linear_scaled_warmup_lr
-    config.TRAIN.MIN_LR = linear_scaled_min_lr
+    # # linear scale the learning rate according to total batch size, may not be optimal
+    # linear_scaled_lr = config.TRAIN.BASE_LR * config.DATA.BATCH_SIZE / 512.0
+    # linear_scaled_warmup_lr = config.TRAIN.WARMUP_LR * config.DATA.BATCH_SIZE / 512.0
+    # linear_scaled_min_lr = config.TRAIN.MIN_LR * config.DATA.BATCH_SIZE / 512.0
+    # # gradient accumulation also need to scale the learning rate
+    # if config.TRAIN.ACCUMULATION_STEPS > 1:
+    #     linear_scaled_lr = linear_scaled_lr * config.TRAIN.ACCUMULATION_STEPS
+    #     linear_scaled_warmup_lr = linear_scaled_warmup_lr * config.TRAIN.ACCUMULATION_STEPS
+    #     linear_scaled_min_lr = linear_scaled_min_lr * config.TRAIN.ACCUMULATION_STEPS
+    # config.defrost()
+    # config.TRAIN.BASE_LR = linear_scaled_lr
+    # config.TRAIN.WARMUP_LR = linear_scaled_warmup_lr
+    # config.TRAIN.MIN_LR = linear_scaled_min_lr
     # config.TRAIN.BASE_LR = 2e-3
     # config.TRAIN.WARMUP_LR = 1e-3
     # config.TRAIN.MIN_LR = 1e-5
-    config.freeze()
+    # config.freeze()
 
     os.makedirs(config.OUTPUT, exist_ok=True)
     logger = create_logger(output_dir=config.OUTPUT, name=f"{config.MODEL.NAME}")
@@ -97,13 +97,12 @@ def main(data_loader_train, data_loader_val):
     criterion_ssup = cal_selfsupervised_loss
 
     max_accuracy = 0.0
-    save_path = "./best-modelforall.pth"
 
     logger.info("Start training")
     start_time = time.time()
 
     init_lambda_drloc = 0.0
-    for epoch in range(config.TRAIN.START_EPOCH, 301):  # config.TRAIN.EPOCHS):
+    for epoch in range(config.TRAIN.EPOCHS):
         if config.TRAIN.USE_DRLOC:
             init_lambda_drloc = _weight_decay(config.TRAIN.LAMBDA_DRLOC, epoch, config.TRAIN.SSL_WARMUP_EPOCHS, config.TRAIN.EPOCHS)
 
@@ -122,14 +121,16 @@ def main(data_loader_train, data_loader_val):
         logger.info(f"Accuracy of the network on the test images: {acc1:.1f}%")
         if acc1 > max_accuracy:
             torch.save(model.state_dict(), save_path)
+            logger.info(f"{save_path} saved !!!")
 
-            save_checkpoint_best(config, epoch, model_without_ddp, max_accuracy, optimizer, lr_scheduler, logger)
+            # save_checkpoint_best(config, epoch, model_without_ddp, max_accuracy, save_path, logger)
         max_accuracy = max(max_accuracy, acc1)
         logger.info(f"Max accuracy: {max_accuracy:.2f}%")
 
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     logger.info("Training time {}".format(total_time_str))
+    return model
 
 
 def train_one_epoch(config, model, criterion_sup, criterion_ssup, data_loader, optimizer, epoch, lr_scheduler, logger, lambda_drloc):
@@ -197,21 +198,22 @@ def train_one_epoch(config, model, criterion_sup, criterion_ssup, data_loader, o
         batch_time.update(time.time() - end)
         end = time.time()
 
-        if idx % config.PRINT_FREQ == 0:
-            lr = optimizer.param_groups[0]["lr"]
-            memory_used = torch.cuda.max_memory_allocated() / (1024.0 * 1024.0)
-            etas = batch_time.avg * (num_steps - idx)
-            logger.info(
-                f"Train: [{epoch}/{config.TRAIN.EPOCHS}][{idx}/{num_steps}]\t"
-                f"eta {datetime.timedelta(seconds=int(etas))} lr {lr:.6f}\t"
-                f"time {batch_time.val:.4f} ({batch_time.avg:.4f})\t"
-                f"loss {loss_meter.val:.4f} ({loss_meter.avg:.4f})\t"
-                f"grad_norm {norm_meter.val:.4f} ({norm_meter.avg:.4f})\t"
-                f"mem {memory_used:.0f}MB"
-            )
-            if config.TRAIN.USE_DRLOC:
-                logger.info(f"weights: drloc {lambda_drloc:.4f}")
-                logger.info(" ".join(["%s: [%.4f]" % (key, value) for key, value in ssup_items.items()]))
+        # if idx % config.PRINT_FREQ == 0:
+    lr = optimizer.param_groups[0]["lr"]
+    memory_used = torch.cuda.max_memory_allocated() / (1024.0 * 1024.0)
+    etas = batch_time.avg * (num_steps - idx)
+    logger.info(
+        # f"Train: [{epoch}/{config.TRAIN.EPOCHS}][{idx}/{num_steps}]\t"
+        f"Train: [{epoch}/{config.TRAIN.EPOCHS}]\t"
+        f"eta {datetime.timedelta(seconds=int(etas))} lr {lr:.6f}\t"
+        f"time {batch_time.val:.4f} ({batch_time.avg:.4f})\t"
+        f"loss {loss_meter.val:.4f} ({loss_meter.avg:.4f})\t"
+        f"grad_norm {norm_meter.val:.4f} ({norm_meter.avg:.4f})\t"
+        f"mem {memory_used:.0f}MB"
+    )
+    if config.TRAIN.USE_DRLOC:
+        logger.info(f"weights: drloc {lambda_drloc:.4f}")
+        logger.info(" ".join(["%s: [%.4f]" % (key, value) for key, value in ssup_items.items()]))
 
     epoch_time = time.time() - start
     # print(cc.item())
@@ -220,8 +222,54 @@ def train_one_epoch(config, model, criterion_sup, criterion_ssup, data_loader, o
     return OrderedDict([("loss", loss_meter.avg)])
 
 
+# @torch.no_grad()
+# def validate(config, data_loader, model, logger):
+#     criterion = torch.nn.CrossEntropyLoss()
+#     model.eval()
+
+#     batch_time = AverageMeter()
+#     loss_meter = AverageMeter()
+#     acc1_meter = AverageMeter()
+#     acc5_meter = AverageMeter()
+
+#     end = time.time()
+#     for idx, (images, target) in enumerate(data_loader):
+#         images = images.cuda(non_blocking=True)
+#         target = target.cuda(non_blocking=True)
+
+#         # compute output
+#         output = model(images)
+
+#         # measure accuracy and record loss
+#         loss = criterion(output.sup, target)
+#         acc1, acc5 = accuracy(output.sup, target, topk=(1, 5))
+
+#         loss_meter.update(loss.item(), target.size(0))
+#         acc1_meter.update(acc1.item(), target.size(0))
+#         acc5_meter.update(acc5.item(), target.size(0))
+
+#         # measure elapsed time
+#         batch_time.update(time.time() - end)
+#         end = time.time()
+
+#         # if idx % config.PRINT_FREQ == 0:
+#     memory_used = torch.cuda.max_memory_allocated() / (1024.0 * 1024.0)
+#     logger.info(
+#         # f"Test: [{idx}/{len(data_loader)}]\t"
+#         f"TEST:\t"
+#         f"Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t"
+#         f"Loss {loss_meter.val:.4f} ({loss_meter.avg:.4f})\t"
+#         f"Acc@1 {acc1_meter.val:.3f} ({acc1_meter.avg:.3f})\t"
+#         f"Acc@5 {acc5_meter.val:.3f} ({acc5_meter.avg:.3f})\t"
+#         f"Mem {memory_used:.0f}MB"
+#     )
+#     logger.info(f" * Acc@1 {acc1_meter.avg:.3f} Acc@5 {acc5_meter.avg:.3f}")
+#     return acc1_meter.avg, acc5_meter.avg, loss_meter.avg
+
 @torch.no_grad()
 def validate(config, data_loader, model, logger):
+    from sklearn.metrics import classification_report
+
     criterion = torch.nn.CrossEntropyLoss()
     model.eval()
 
@@ -230,15 +278,15 @@ def validate(config, data_loader, model, logger):
     acc1_meter = AverageMeter()
     acc5_meter = AverageMeter()
 
+    all_preds = []
+    all_labels = []
+
     end = time.time()
     for idx, (images, target) in enumerate(data_loader):
         images = images.cuda(non_blocking=True)
         target = target.cuda(non_blocking=True)
 
-        # compute output
         output = model(images)
-
-        # measure accuracy and record loss
         loss = criterion(output.sup, target)
         acc1, acc5 = accuracy(output.sup, target, topk=(1, 5))
 
@@ -246,21 +294,33 @@ def validate(config, data_loader, model, logger):
         acc1_meter.update(acc1.item(), target.size(0))
         acc5_meter.update(acc5.item(), target.size(0))
 
-        # measure elapsed time
+        # collect predictions and targets for classification report
+        preds = torch.argmax(output.sup, dim=1)
+        all_preds.append(preds.cpu().numpy())
+        all_labels.append(target.cpu().numpy())
+
         batch_time.update(time.time() - end)
         end = time.time()
 
-        if idx % config.PRINT_FREQ == 0:
-            memory_used = torch.cuda.max_memory_allocated() / (1024.0 * 1024.0)
-            logger.info(
-                f"Test: [{idx}/{len(data_loader)}]\t"
-                f"Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t"
-                f"Loss {loss_meter.val:.4f} ({loss_meter.avg:.4f})\t"
-                f"Acc@1 {acc1_meter.val:.3f} ({acc1_meter.avg:.3f})\t"
-                f"Acc@5 {acc5_meter.val:.3f} ({acc5_meter.avg:.3f})\t"
-                f"Mem {memory_used:.0f}MB"
-            )
+    # flatten all_preds and all_labels
+    all_preds = np.concatenate(all_preds)
+    all_labels = np.concatenate(all_labels)
+
+    memory_used = torch.cuda.max_memory_allocated() / (1024.0 * 1024.0)
+    logger.info(
+        f"TEST:\t"
+        f"Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t"
+        f"Loss {loss_meter.val:.4f} ({loss_meter.avg:.4f})\t"
+        f"Acc@1 {acc1_meter.val:.3f} ({acc1_meter.avg:.3f})\t"
+        f"Acc@5 {acc5_meter.val:.3f} ({acc5_meter.avg:.3f})\t"
+        f"Mem {memory_used:.0f}MB"
+    )
     logger.info(f" * Acc@1 {acc1_meter.avg:.3f} Acc@5 {acc5_meter.avg:.3f}")
+
+    # ADD: classification report
+    report = classification_report(all_labels, all_preds, digits=4)
+    logger.info(f"\nClassification Report:\n{report}")
+
     return acc1_meter.avg, acc5_meter.avg, loss_meter.avg
 
 
