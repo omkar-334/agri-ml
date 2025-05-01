@@ -9,7 +9,7 @@ from cswin_boat import CSWinTransformer
 from swin import SwinTransformer
 
 
-def build_model(config):
+def build_model(config, num_classes):
     model_type = config.MODEL.TYPE
 
     if model_type == "swin":
@@ -17,7 +17,7 @@ def build_model(config):
             img_size=config.DATA.IMG_SIZE,
             patch_size=config.MODEL.SWIN.PATCH_SIZE,
             in_chans=config.MODEL.SWIN.IN_CHANS,
-            num_classes=config.MODEL.NUM_CLASSES,
+            num_classes=num_classes,
             embed_dim=config.MODEL.SWIN.EMBED_DIM,
             depths=config.MODEL.SWIN.DEPTHS,
             num_heads=config.MODEL.SWIN.NUM_HEADS,
@@ -37,11 +37,8 @@ def build_model(config):
             drloc_mode=config.TRAIN.DRLOC_MODE,
             use_abs=config.TRAIN.USE_ABS,
         )
-    elif model_type in ["cswin", "cswin_boat"]:
-        if model_type == "cswin_boat":
-            model_class = config.MODEL.NUM_CLASSES
-        else:
-            model_class = None
+    elif model_type in {"cswin", "cswin_boat"}:
+        model_class = num_classes if model_type == "cswin_boat" else None
 
         model = CSWinTransformer(
             patch_size=4,
@@ -50,7 +47,7 @@ def build_model(config):
             drop_path_rate=0.4,
             split_size=[1, 2, 7, 7],
             num_heads=[2, 4, 8, 16],
-            num_classes=config.MODEL.NUM_CLASSES,
+            num_classes=num_classes,
             mlp_ratio=4.0,
             use_drloc=True,
             use_multiscale=False,

@@ -1,13 +1,24 @@
+import contextlib
+import gc
+import os
+import sys
+import zipfile
+
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.nn.functional as F
 from lime import lime_image
-from pytorch_grad_cam import GradCAM, GradCAMPlusPlus, ScoreCAM
+from PIL import Image
+from pytorch_grad_cam import (
+    GradCAM,
+    GradCAMPlusPlus,
+    ScoreCAM,  # Needed for isinstance check
+)
 from pytorch_grad_cam.utils.image import show_cam_on_image
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
-import os
-from PIL import Image
+from tqdm import tqdm
+
 
 def tensor_to_rgb_image(tensor):
     img = tensor.clone().detach().cpu()
@@ -39,7 +50,7 @@ def lime_explanation(image, model, class_index):
     return temp
 
 
-def plot(model, image,image_path,  class_index, target_layers, output_dir="data/cam_outputs", verbose=False):
+def plot_old(model, image, image_path, class_index, target_layers, output_dir="data/cam_outputs", verbose=False):
     # image, class_index = dataset[index]
     base_name = os.path.splitext(os.path.basename(image_path))[0]
     os.makedirs(output_dir, exist_ok=True)
@@ -48,7 +59,7 @@ def plot(model, image,image_path,  class_index, target_layers, output_dir="data/
     input_tensor = input_tensor.to(device)
 
     rgb_img = tensor_to_rgb_image(image)
-    
+
     target = [ClassifierOutputTarget(class_index)]
 
     # lime_img = lime_explanation(image, model, class_index)
@@ -58,7 +69,7 @@ def plot(model, image,image_path,  class_index, target_layers, output_dir="data/
 
     # lime_path = os.path.join(output_dir, f"{base_name}_lime.jpg")
     # Image.fromarray(lime_img).save(lime_path)
-    
+
     cams = {
         "Grad-CAM": GradCAM(model=model, target_layers=target_layers),
         "Grad-CAM++": GradCAMPlusPlus(model=model, target_layers=target_layers),
@@ -87,3 +98,29 @@ def plot(model, image,image_path,  class_index, target_layers, output_dir="data/
     #         plt.axis("off")
     #     plt.tight_layout()
     #     plt.show()
+
+
+def plot(model, image, image_path, class_index, cams, output_dir="data/cam_outputs"):
+    base_name = os.path.splitext(os.path.basename(image_path))[0]
+    os.makedirs(output_dir, exist_ok=True)
+
+    device = next(model.parameters()).device
+    input_tensor = image.unsqueeze(0).to(device)
+    rgb_img = tensor_to_rgb_image(image)
+
+    target = [ClassifierOutputTarget(class_index)]
+
+    # Save original image
+    original_path = os.path.join(output_dir, f"{base_name}_original.jpg")
+    Image.fromarray((rgb_img * 255).astype(np.uint8)).save(original_path)
+
+    for name, cam_method in cams.items():
+        if isinstance(cam_method, ScoreCAM):
+            with torch.no_grad():
+                grayscale_cam = cam_method(input_tensor=input_tensor, targets=target)[0]
+        else:
+            grayscale_cam = cam_method(input_tensor=input_tensor, targets=target)[0]
+
+        cam_image = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
+        save_path = os.path.join(output_dir, f"{base_name}_{name}.jpg")
+        Image.fromarray(cam_image).save(save_path)

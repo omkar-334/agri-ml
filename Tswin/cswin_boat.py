@@ -4,12 +4,11 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.utils.checkpoint as checkpoint
+from aux_modules import DenseRelativeLoc
 from einops import rearrange
 from einops.layers.torch import Rearrange
 from munch import Munch
 from timm.models.layers import DropPath, trunc_normal_
-
-from aux_modules import DenseRelativeLoc
 
 # from .helpers import build_model_with_cfg ,named_apply, checkpoint_seq
 # from .vision_transformer import checkpoint_filter_fn,get_init_weights_vit
@@ -409,39 +408,35 @@ class CSWinBlock(nn.Module):
         self.proj_drop = nn.Dropout(drop)
         self.content = content
         if last_stage:
-            self.attns = nn.ModuleList(
-                [
-                    LePEAttention(
-                        dim,
-                        resolution=self.patches_resolution,
-                        idx=-1,
-                        split_size=split_size,
-                        num_heads=num_heads,
-                        dim_out=dim,
-                        qk_scale=qk_scale,
-                        attn_drop=attn_drop,
-                        proj_drop=drop,
-                    )
-                    for i in range(self.branch_num)
-                ]
-            )
+            self.attns = nn.ModuleList([
+                LePEAttention(
+                    dim,
+                    resolution=self.patches_resolution,
+                    idx=-1,
+                    split_size=split_size,
+                    num_heads=num_heads,
+                    dim_out=dim,
+                    qk_scale=qk_scale,
+                    attn_drop=attn_drop,
+                    proj_drop=drop,
+                )
+                for i in range(self.branch_num)
+            ])
         else:
-            self.attns = nn.ModuleList(
-                [
-                    LePEAttention(
-                        dim // 2,
-                        resolution=self.patches_resolution,
-                        idx=i,
-                        split_size=split_size,
-                        num_heads=num_heads // 2,
-                        dim_out=dim // 2,
-                        qk_scale=qk_scale,
-                        attn_drop=attn_drop,
-                        proj_drop=drop,
-                    )
-                    for i in range(self.branch_num)
-                ]
-            )
+            self.attns = nn.ModuleList([
+                LePEAttention(
+                    dim // 2,
+                    resolution=self.patches_resolution,
+                    idx=i,
+                    split_size=split_size,
+                    num_heads=num_heads // 2,
+                    dim_out=dim // 2,
+                    qk_scale=qk_scale,
+                    attn_drop=attn_drop,
+                    proj_drop=drop,
+                )
+                for i in range(self.branch_num)
+            ])
         if self.content:
             self.content_attn = ContentAttention(
                 dim=dim, window_size=split_size, num_heads=num_heads, qkv_bias=qkv_bias, qk_scale=qkv_bias, attn_drop=attn_drop, proj_drop=attn_drop
@@ -572,95 +567,87 @@ class CSWinTransformer(nn.Module):
 
         curr_dim = embed_dim
         dpr = [x.item() for x in torch.linspace(0, drop_path_rate, np.sum(depth))]  # stochastic depth decay rule
-        self.stage1 = nn.ModuleList(
-            [
-                CSWinBlock(
-                    dim=curr_dim,
-                    num_heads=heads[0],
-                    reso=img_size // 4,
-                    mlp_ratio=mlp_ratio,
-                    qkv_bias=qkv_bias,
-                    qk_scale=qk_scale,
-                    split_size=split_size[0],
-                    drop=drop_rate,
-                    attn_drop=attn_drop_rate,
-                    drop_path=dpr[i],
-                    norm_layer=norm_layer,
-                    content=(i % 2 == 0),
-                )
-                for i in range(depth[0])
-            ]
-        )
+        self.stage1 = nn.ModuleList([
+            CSWinBlock(
+                dim=curr_dim,
+                num_heads=heads[0],
+                reso=img_size // 4,
+                mlp_ratio=mlp_ratio,
+                qkv_bias=qkv_bias,
+                qk_scale=qk_scale,
+                split_size=split_size[0],
+                drop=drop_rate,
+                attn_drop=attn_drop_rate,
+                drop_path=dpr[i],
+                norm_layer=norm_layer,
+                content=(i % 2 == 0),
+            )
+            for i in range(depth[0])
+        ])
 
         self.merge1 = Merge_Block(curr_dim, curr_dim * 2)
         curr_dim = curr_dim * 2
-        self.stage2 = nn.ModuleList(
-            [
-                CSWinBlock(
-                    dim=curr_dim,
-                    num_heads=heads[1],
-                    reso=img_size // 8,
-                    mlp_ratio=mlp_ratio,
-                    qkv_bias=qkv_bias,
-                    qk_scale=qk_scale,
-                    split_size=split_size[1],
-                    drop=drop_rate,
-                    attn_drop=attn_drop_rate,
-                    drop_path=dpr[np.sum(depth[:1]) + i],
-                    norm_layer=norm_layer,
-                    content=(i % 2 == 0),
-                )
-                for i in range(depth[1])
-            ]
-        )
+        self.stage2 = nn.ModuleList([
+            CSWinBlock(
+                dim=curr_dim,
+                num_heads=heads[1],
+                reso=img_size // 8,
+                mlp_ratio=mlp_ratio,
+                qkv_bias=qkv_bias,
+                qk_scale=qk_scale,
+                split_size=split_size[1],
+                drop=drop_rate,
+                attn_drop=attn_drop_rate,
+                drop_path=dpr[np.sum(depth[:1]) + i],
+                norm_layer=norm_layer,
+                content=(i % 2 == 0),
+            )
+            for i in range(depth[1])
+        ])
 
         self.merge2 = Merge_Block(curr_dim, curr_dim * 2)
         curr_dim = curr_dim * 2
         temp_stage3 = []
-        temp_stage3.extend(
-            [
-                CSWinBlock(
-                    dim=curr_dim,
-                    num_heads=heads[2],
-                    reso=img_size // 16,
-                    mlp_ratio=mlp_ratio,
-                    qkv_bias=qkv_bias,
-                    qk_scale=qk_scale,
-                    split_size=split_size[2],
-                    drop=drop_rate,
-                    attn_drop=attn_drop_rate,
-                    drop_path=dpr[np.sum(depth[:2]) + i],
-                    norm_layer=norm_layer,
-                    content=(i % 2 == 0),
-                )
-                for i in range(depth[2])
-            ]
-        )
+        temp_stage3.extend([
+            CSWinBlock(
+                dim=curr_dim,
+                num_heads=heads[2],
+                reso=img_size // 16,
+                mlp_ratio=mlp_ratio,
+                qkv_bias=qkv_bias,
+                qk_scale=qk_scale,
+                split_size=split_size[2],
+                drop=drop_rate,
+                attn_drop=attn_drop_rate,
+                drop_path=dpr[np.sum(depth[:2]) + i],
+                norm_layer=norm_layer,
+                content=(i % 2 == 0),
+            )
+            for i in range(depth[2])
+        ])
 
         self.stage3 = nn.ModuleList(temp_stage3)
 
         self.merge3 = Merge_Block(curr_dim, curr_dim * 2)
         curr_dim = curr_dim * 2
-        self.stage4 = nn.ModuleList(
-            [
-                CSWinBlock(
-                    dim=curr_dim,
-                    num_heads=heads[3],
-                    reso=img_size // 32,
-                    mlp_ratio=mlp_ratio,
-                    qkv_bias=qkv_bias,
-                    qk_scale=qk_scale,
-                    split_size=split_size[-1],
-                    drop=drop_rate,
-                    attn_drop=attn_drop_rate,
-                    drop_path=dpr[np.sum(depth[:-1]) + i],
-                    norm_layer=norm_layer,
-                    last_stage=True,
-                    content=(i % 2 == 0),
-                )
-                for i in range(depth[-1])
-            ]
-        )
+        self.stage4 = nn.ModuleList([
+            CSWinBlock(
+                dim=curr_dim,
+                num_heads=heads[3],
+                reso=img_size // 32,
+                mlp_ratio=mlp_ratio,
+                qkv_bias=qkv_bias,
+                qk_scale=qk_scale,
+                split_size=split_size[-1],
+                drop=drop_rate,
+                attn_drop=attn_drop_rate,
+                drop_path=dpr[np.sum(depth[:-1]) + i],
+                norm_layer=norm_layer,
+                last_stage=True,
+                content=(i % 2 == 0),
+            )
+            for i in range(depth[-1])
+        ])
         if self.use_drloc:
             self.drloc = nn.ModuleList()
             if self.use_multiscale:
