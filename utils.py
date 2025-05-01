@@ -5,6 +5,16 @@ import zipfile
 from typing import Literal
 
 from huggingface_hub import HfApi, HfFolder, hf_hub_download, upload_file
+from torch.utils.data import Subset
+
+
+def get_num_classes(train_loader):
+    dataset = train_loader.dataset
+    if isinstance(dataset, Subset):
+        dataset = dataset.dataset
+
+    num_classes = len(dataset.class_to_idx)
+    return num_classes
 
 
 def upload(paths, repo="omkar334/agri", repo_type: Literal["model", "space", "dataset"] = "model", token=None):

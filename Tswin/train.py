@@ -21,10 +21,11 @@ from logger import create_logger
 from losses import cal_selfsupervised_loss
 from lr_scheduler import build_scheduler
 from optimizer import build_optimizer
+from sklearn.metrics import classification_report
 from timm.utils import AverageMeter, accuracy
 from torch.utils.tensorboard import SummaryWriter
 
-from utils import get_grad_norm, save_checkpoint_best
+from utils import get_grad_norm
 
 os.environ["MASTER_ADDR"] = "localhost"
 os.environ["MASTER_PORT"] = "5678"
@@ -38,7 +39,7 @@ def _weight_decay(init_weight, epoch, warmup_epochs=10, total_epoch=300):
     return cur_weight
 
 
-def main(data_loader_train, data_loader_val, save_path="./best-modelforall.pth"):
+def main(data_loader_train, data_loader_val, num_classes, save_path="./best-modelforall.pth"):
     tb_write = SummaryWriter()
     config = get_config()
 
@@ -69,7 +70,7 @@ def main(data_loader_train, data_loader_val, save_path="./best-modelforall.pth")
     logger = create_logger(output_dir=config.OUTPUT, name=f"{config.MODEL.NAME}")
 
     logger.info(f"Creating model:{config.MODEL.TYPE}/{config.MODEL.NAME}")
-    model = build_model(config)
+    model = build_model(config, num_classes)
 
     model.cuda()
 
@@ -110,7 +111,7 @@ def main(data_loader_train, data_loader_val, save_path="./best-modelforall.pth")
         abc = OrderedDict(epoch=epoch)
         abc.update([("train_" + k, v) for k, v in train_metrics.items()])
 
-        acc1, acc5, loss = validate(config, data_loader_val, model, logger)
+        acc1, acc5, loss = validate(data_loader_val, model, logger)
         tags = ["val_acc1", "val_loss", "train_loss", "learn_rate"]
         tb_write.add_scalar(tags[0], acc1, epoch)
         tb_write.add_scalar(tags[1], loss, epoch)
@@ -268,9 +269,7 @@ def train_one_epoch(config, model, criterion_sup, criterion_ssup, data_loader, o
 
 
 @torch.no_grad()
-def validate(config, data_loader, model, logger):
-    from sklearn.metrics import classification_report
-
+def validate(data_loader, model, logger):
     criterion = torch.nn.CrossEntropyLoss()
     model.eval()
 
@@ -319,7 +318,7 @@ def validate(config, data_loader, model, logger):
     logger.info(f" * Acc@1 {acc1_meter.avg:.3f} Acc@5 {acc5_meter.avg:.3f}")
 
     # ADD: classification report
-    report = classification_report(all_labels, all_preds, digits=4)
+    report = classification_report(all_labels, all_preds, digits=4, zero_division=0)
     logger.info(f"\nClassification Report:\n{report}")
 
     return acc1_meter.avg, acc5_meter.avg, loss_meter.avg

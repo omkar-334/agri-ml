@@ -12,7 +12,7 @@ def collect_samples(feats, pxy, batch_size):
     return torch.stack([feats[i, :, pxy[i][:, 0], pxy[i][:, 1]] for i in range(batch_size)], dim=0)
 
 
-def collect_samples_faster(feats, pxy):
+def collect_samples_faster(feats, pxy, batch_size):
     n, c, h, w = feats.size()
     feats = feats.view(n, c, -1).permute(1, 0, 2).reshape(c, -1)  # [n, c, h, w] -> [n, c, hw] -> [c, nhw]
 

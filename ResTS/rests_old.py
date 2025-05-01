@@ -300,7 +300,7 @@ def validate_model(model, valid_generator, batch_size=16):
         y_true.extend(np.argmax(y_batch["out2"], axis=1))
         y_pred.extend(np.argmax(preds[1], axis=1))
 
-    report_dict = classification_report(y_true, y_pred, output_dict=True)
+    report_dict = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
     report_df = pd.DataFrame(report_dict).transpose()
     report_df.to_csv("classification_report.csv", float_format="%.4f")
 

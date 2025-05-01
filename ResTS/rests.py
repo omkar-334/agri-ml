@@ -1,25 +1,19 @@
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 from keras import optimizers
 from keras.applications import Xception
 from keras.applications.xception import preprocess_input
 from keras.layers import Activation, Add, BatchNormalization, Conv2D, Conv2DTranspose, Dense, Flatten, Reshape, SeparableConv2D, UpSampling2D, ZeroPadding2D, concatenate
 from keras.models import Model
 from sklearn.metrics import classification_report
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.applications import Xception
-from tensorflow.keras.layers import (
-    Dense, Flatten, Add, Reshape, SeparableConv2D, BatchNormalization,
-    Activation, concatenate, UpSampling2D, Conv2D, Conv2DTranspose, ZeroPadding2D
-)
-from tensorflow.keras.models import Model, clone_model
-import tensorflow as tf
+
 # from keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications import Xception
-from tensorflow.keras.layers import (Flatten, Dense, Add, Reshape, SeparableConv2D,
-                                     BatchNormalization, Activation, concatenate, UpSampling2D,
-                                     Conv2D, Conv2DTranspose, ZeroPadding2D)
-from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Activation, Add, BatchNormalization, Conv2D, Conv2DTranspose, Dense, Flatten, Reshape, SeparableConv2D, UpSampling2D, ZeroPadding2D, concatenate
+from tensorflow.keras.models import Model, clone_model
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
 
 def load_generators(train_path, val_path, batch_size=16):
     train_datagen = ImageDataGenerator(
@@ -35,13 +29,14 @@ def load_generators(train_path, val_path, batch_size=16):
 # For plantvillage dataset, the number of classes is 38 and the input shape is (224, 224, 3)
 # For sugarcane dataset, the number of classes is 5 and the input shape is (224, 224, 3)
 
+
 def rename_model(model, new_name):
     with tf.name_scope(new_name):
         return clone_model(model)
 
 
 def resize_like(tensor, ref):
-    return tf.image.resize(tensor, size=(tf.shape(ref)[1], tf.shape(ref)[2]), method='bilinear')
+    return tf.image.resize(tensor, size=(tf.shape(ref)[1], tf.shape(ref)[2]), method="bilinear")
 
 
 def sep_block(x, filters, skip_conn, block_name, add_input=None, upsample=False, suffix=""):
@@ -53,9 +48,9 @@ def sep_block(x, filters, skip_conn, block_name, add_input=None, upsample=False,
     x = BatchNormalization(name=f"{block_name}_bn1_{suffix}")(x)
 
     skip_conn = Lambda(
-        lambda s: tf.image.resize(s[0], size=(tf.shape(s[1])[1], tf.shape(s[1])[2]), method='bilinear'),
+        lambda s: tf.image.resize(s[0], size=(tf.shape(s[1])[1], tf.shape(s[1])[2]), method="bilinear"),
         output_shape=lambda shapes: (shapes[1][0], None, None, shapes[0][-1]),
-        name=f"{block_name}_resize_skip_{suffix}"
+        name=f"{block_name}_resize_skip_{suffix}",
     )([skip_conn, x])
 
     x = concatenate([skip_conn, x], axis=-1, name=f"{block_name}_concat_{suffix}")
@@ -66,16 +61,16 @@ def sep_block(x, filters, skip_conn, block_name, add_input=None, upsample=False,
 
     if add_input is not None:
         add_input = Lambda(
-            lambda s: tf.image.resize(s[0], size=(tf.shape(s[1])[1], tf.shape(s[1])[2]), method='bilinear'),
+            lambda s: tf.image.resize(s[0], size=(tf.shape(s[1])[1], tf.shape(s[1])[2]), method="bilinear"),
             output_shape=lambda shapes: (shapes[1][0], None, None, shapes[0][-1]),
-            name=f"{block_name}_resize_add_{suffix}"
+            name=f"{block_name}_resize_add_{suffix}",
         )([add_input, x])
 
         if add_input.shape[-1] != filters:
             add_input = Conv2D(filters, (1, 1), padding="same", name=f"{block_name}_proj_add_{suffix}")(add_input)
 
         x = Add(name=f"{block_name}_add_{suffix}")([add_input, x])
-    
+
     return x
 
 
@@ -86,12 +81,22 @@ def load_model(num_classes=38, input_shape=(224, 224, 3)):
     out1 = Dense(num_classes, activation="softmax", name="output_encoder1")(dense1)
 
     convs = {
-        f"conv{i+1}": base_model1.get_layer(name).output for i, name in enumerate([
-            "block14_sepconv2_act", "block13_sepconv2_bn", "block12_sepconv3_bn",
-            "block11_sepconv3_bn", "block10_sepconv3_bn", "block9_sepconv3_bn",
-            "block8_sepconv3_bn", "block7_sepconv3_bn", "block6_sepconv3_bn",
-            "block5_sepconv3_bn", "block4_sepconv2_bn", "block3_sepconv2_bn",
-            "block2_sepconv2_bn", "block1_conv2_act"
+        f"conv{i + 1}": base_model1.get_layer(name).output
+        for i, name in enumerate([
+            "block14_sepconv2_act",
+            "block13_sepconv2_bn",
+            "block12_sepconv3_bn",
+            "block11_sepconv3_bn",
+            "block10_sepconv3_bn",
+            "block9_sepconv3_bn",
+            "block8_sepconv3_bn",
+            "block7_sepconv3_bn",
+            "block6_sepconv3_bn",
+            "block5_sepconv3_bn",
+            "block4_sepconv2_bn",
+            "block3_sepconv2_bn",
+            "block2_sepconv2_bn",
+            "block1_conv2_act",
         ])
     }
 
@@ -199,7 +204,7 @@ def validate_model(model, valid_generator, batch_size=16):
         y_true.extend(np.argmax(y_batch["out2"], axis=1))
         y_pred.extend(np.argmax(preds[1], axis=1))
 
-    report_dict = classification_report(y_true, y_pred, output_dict=True)
+    report_dict = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
     report_df = pd.DataFrame(report_dict).transpose()
     report_df.to_csv("classification_report.csv", float_format="%.4f")
 

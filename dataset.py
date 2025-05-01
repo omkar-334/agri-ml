@@ -23,16 +23,19 @@ maianet_transform = transforms.Compose([
     transforms.Lambda(lambda x: transforms.functional.erase(x, i=0, j=0, h=50, w=50, v=0.0)),  # Add cutout
 ])
 
-tswin_train_transform = create_transform(
-    input_size=224,
-    is_training=True,
-    color_jitter=0.4,
-    auto_augment="rand-m9-mstd0.5-inc1",
-    re_prob=0.25,
-    re_mode="pixel",
-    re_count=1,
-    interpolation="bicubic",
-)
+tswin_train_transform = transforms.Compose([
+    transforms.Grayscale(num_output_channels=3),
+    create_transform(
+        input_size=224,
+        is_training=True,
+        color_jitter=0.4,
+        auto_augment="rand-m9-mstd0.5-inc1",
+        re_prob=0.25,
+        re_mode="pixel",
+        re_count=1,
+        interpolation="bicubic",
+    ),
+])
 
 tswin_transform = transforms.Compose([
     transforms.Resize((224, 224)),  # Resize to input size of MaiaNet
