@@ -15,15 +15,15 @@ import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
 import torch.nn.init as init
-from timm.utils import AverageMeter, accuracy
-from torch.utils.tensorboard import SummaryWriter
-
 from build import build_model
 from config import get_config
 from logger import create_logger
 from losses import cal_selfsupervised_loss
 from lr_scheduler import build_scheduler
 from optimizer import build_optimizer
+from timm.utils import AverageMeter, accuracy
+from torch.utils.tensorboard import SummaryWriter
+
 from utils import get_grad_norm, save_checkpoint_best
 
 os.environ["MASTER_ADDR"] = "localhost"
@@ -31,7 +31,7 @@ os.environ["MASTER_PORT"] = "5678"
 
 
 def _weight_decay(init_weight, epoch, warmup_epochs=10, total_epoch=300):
-    if epoch <= warmup_epochs:
+    if epoch <= warmup_epochs:  # noqa: SIM108
         cur_weight = min(init_weight / warmup_epochs * epoch, init_weight)
     else:
         cur_weight = init_weight * (1.0 - (epoch - warmup_epochs) / (total_epoch - warmup_epochs))
@@ -265,6 +265,7 @@ def train_one_epoch(config, model, criterion_sup, criterion_ssup, data_loader, o
 #     )
 #     logger.info(f" * Acc@1 {acc1_meter.avg:.3f} Acc@5 {acc5_meter.avg:.3f}")
 #     return acc1_meter.avg, acc5_meter.avg, loss_meter.avg
+
 
 @torch.no_grad()
 def validate(config, data_loader, model, logger):

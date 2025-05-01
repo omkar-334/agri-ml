@@ -9,10 +9,9 @@ import math
 import torch
 import torch.nn as nn
 import torch.utils.checkpoint as checkpoint
+from aux_modules import DenseRelativeLoc
 from munch import Munch
 from timm.models.layers import DropPath, to_2tuple, trunc_normal_
-
-from aux_modules import DenseRelativeLoc
 
 
 class Mlp(nn.Module):
@@ -275,7 +274,7 @@ class SwinTransformerBlock(nn.Module):
             mask_windows = window_partition(img_mask, self.window_size)  # nW, window_size, window_size, 1
             mask_windows = mask_windows.view(-1, self.window_size * self.window_size)
             attn_mask = mask_windows.unsqueeze(1) - mask_windows.unsqueeze(2)
-            attn_mask = attn_mask.masked_fill(attn_mask != 0, float(-100.0)).masked_fill(attn_mask == 0, float(0.0))
+            attn_mask = attn_mask.masked_fill(attn_mask != 0, (-100.0)).masked_fill(attn_mask == 0, 0.0)
         else:
             attn_mask = None
 
@@ -291,10 +290,7 @@ class SwinTransformerBlock(nn.Module):
         x = x.view(B, H, W, C)
 
         # cyclic shift
-        if self.shift_size > 0:
-            shifted_x = torch.roll(x, shifts=(-self.shift_size, -self.shift_size), dims=(1, 2))
-        else:
-            shifted_x = x
+        shifted_x = torch.roll(x, shifts=(-self.shift_size, -self.shift_size), dims=(1, 2)) if self.shift_size > 0 else x
 
         # partition windows
         x_windows = window_partition(shifted_x, self.window_size)  # nW*B, window_size, window_size, C
@@ -308,10 +304,7 @@ class SwinTransformerBlock(nn.Module):
         shifted_x = window_reverse(attn_windows, self.window_size, H, W)  # B H' W' C
 
         # reverse cyclic shift
-        if self.shift_size > 0:
-            x = torch.roll(shifted_x, shifts=(self.shift_size, self.shift_size), dims=(1, 2))
-        else:
-            x = shifted_x
+        x = torch.roll(shifted_x, shifts=(self.shift_size, self.shift_size), dims=(1, 2)) if self.shift_size > 0 else shifted_x
         x = x.view(B, H * W, C)
 
         # FFN
@@ -330,10 +323,7 @@ class SwinTransformerBlock(nn.Module):
         x = x.view(B, H, W, C)
 
         # cyclic shift
-        if self.shift_size > 0:
-            shifted_x = torch.roll(x, shifts=(-self.shift_size, -self.shift_size), dims=(1, 2))
-        else:
-            shifted_x = x
+        shifted_x = torch.roll(x, shifts=(-self.shift_size, -self.shift_size), dims=(1, 2)) if self.shift_size > 0 else x
 
         # partition windows
         x_windows = window_partition(shifted_x, self.window_size)  # nW*B, window_size, window_size, C
@@ -347,10 +337,7 @@ class SwinTransformerBlock(nn.Module):
         shifted_x = window_reverse(attn_windows, self.window_size, H, W)  # B H' W' C
 
         # reverse cyclic shift
-        if self.shift_size > 0:
-            x = torch.roll(shifted_x, shifts=(self.shift_size, self.shift_size), dims=(1, 2))
-        else:
-            x = shifted_x
+        x = torch.roll(shifted_x, shifts=(self.shift_size, self.shift_size), dims=(1, 2)) if self.shift_size > 0 else shifted_x
         x = x.view(B, H * W, C)
 
         # FFN
@@ -474,26 +461,24 @@ class BasicLayer(nn.Module):
         self.use_checkpoint = use_checkpoint
 
         # build blocks
-        self.blocks = nn.ModuleList(
-            [
-                SwinTransformerBlock(
-                    dim=dim,
-                    input_resolution=input_resolution,
-                    num_heads=num_heads,
-                    window_size=window_size,
-                    shift_size=0 if (i % 2 == 0) else window_size // 2,
-                    mlp_ratio=mlp_ratio,
-                    qkv_bias=qkv_bias,
-                    qk_scale=qk_scale,
-                    drop=drop,
-                    attn_drop=attn_drop,
-                    drop_path=drop_path[i] if isinstance(drop_path, list) else drop_path,
-                    norm_layer=norm_layer,
-                    rpe=rpe,
-                )
-                for i in range(depth)
-            ]
-        )
+        self.blocks = nn.ModuleList([
+            SwinTransformerBlock(
+                dim=dim,
+                input_resolution=input_resolution,
+                num_heads=num_heads,
+                window_size=window_size,
+                shift_size=0 if (i % 2 == 0) else window_size // 2,
+                mlp_ratio=mlp_ratio,
+                qkv_bias=qkv_bias,
+                qk_scale=qk_scale,
+                drop=drop,
+                attn_drop=attn_drop,
+                drop_path=drop_path[i] if isinstance(drop_path, list) else drop_path,
+                norm_layer=norm_layer,
+                rpe=rpe,
+            )
+            for i in range(depth)
+        ])
 
         # patch merging layer
         if downsample is not None:
@@ -567,7 +552,7 @@ class PatchEmbed(nn.Module):
 
     def forward(self, x):
         B, C, H, W = x.shape
-        # FIXME look at relaxing size constraints
+        # FIX look at relaxing size constraints
         assert H == self.img_size[0] and W == self.img_size[1], f"Input image size ({H}*{W}) doesn't match model ({self.img_size[0]}*{self.img_size[1]})."
         x = self.proj(x).flatten(2).transpose(1, 2)  # B Ph*Pw C
         if self.norm is not None:
@@ -634,7 +619,6 @@ class SwinTransformer(nn.Module):
         use_multiscale=False,
         drloc_mode="l1",
         use_abs=False,
-        **kwargs,
     ):
         super().__init__()
 
@@ -716,7 +700,8 @@ class SwinTransformer(nn.Module):
 
         self.apply(self._init_weights)
 
-    def _init_weights(self, m):
+    @staticmethod
+    def _init_weights(m):
         if isinstance(m, nn.Linear):
             trunc_normal_(m.weight, std=0.02)
             if isinstance(m, nn.Linear) and m.bias is not None:
@@ -725,12 +710,14 @@ class SwinTransformer(nn.Module):
             nn.init.constant_(m.bias, 0)
             nn.init.constant_(m.weight, 1.0)
 
+    @staticmethod
     @torch.jit.ignore
-    def no_weight_decay(self):
+    def no_weight_decay():
         return {"absolute_pos_embed"}
 
+    @staticmethod
     @torch.jit.ignore
-    def no_weight_decay_keywords(self):
+    def no_weight_decay_keywords():
         return {"relative_position_bias_table"}
 
     def forward_features(self, x):
@@ -770,7 +757,7 @@ class SwinTransformer(nn.Module):
                 H = W = int(math.sqrt(HW))
                 feats = x_cur.view(B, C, H, W)  # [B, C, H, W]
 
-                drloc_feats, deltaxy = self.drloc[idx](feats)  # drloc返回连个参数，一个是predxy一个是deltaxy
+                drloc_feats, deltaxy = self.drloc[idx](feats)
                 outs.drloc.append(drloc_feats)
                 outs.deltaxy.append(deltaxy)
                 outs.plz.append(H)  # plane size

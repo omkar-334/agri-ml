@@ -12,7 +12,7 @@ def collect_samples(feats, pxy, batch_size):
     return torch.stack([feats[i, :, pxy[i][:, 0], pxy[i][:, 1]] for i in range(batch_size)], dim=0)
 
 
-def collect_samples_faster(feats, pxy, batch_size):
+def collect_samples_faster(feats, pxy):
     n, c, h, w = feats.size()
     feats = feats.view(n, c, -1).permute(1, 0, 2).reshape(c, -1)  # [n, c, h, w] -> [n, c, hw] -> [c, nhw]
 
@@ -32,7 +32,7 @@ def collect_positions(batch_size, N):
 
 class DenseRelativeLoc(nn.Module):
     def __init__(self, in_dim, out_dim=2, sample_size=32, drloc_mode="l1", use_abs=False):
-        super(DenseRelativeLoc, self).__init__()
+        super().__init__()
         self.sample_size = sample_size
         self.in_dim = in_dim
         self.drloc_mode = drloc_mode
@@ -41,7 +41,7 @@ class DenseRelativeLoc(nn.Module):
         if self.drloc_mode == "l1":
             self.out_dim = out_dim
             self.layers = nn.Sequential(nn.Linear(in_dim * 2, 512), nn.ReLU(), nn.Linear(512, 512), nn.ReLU(), nn.Linear(512, self.out_dim))
-        elif self.drloc_mode in ["ce", "cbr"]:
+        elif self.drloc_mode in {"ce", "cbr"}:
             self.out_dim = out_dim if self.use_abs else out_dim * 2 - 1
             self.layers = nn.Sequential(nn.Linear(in_dim * 2, 512), nn.ReLU(), nn.Linear(512, 512), nn.ReLU(), nn.Linear(512, 512))
             self.unshared = nn.ModuleList()
@@ -98,7 +98,7 @@ class DenseRelativeLoc(nn.Module):
         fps = self.in_dim * 2 * 512 * self.sample_size
         fps += 512 * 512 * self.sample_size
         fps += 512 * self.out_dim * self.sample_size
-        if self.drloc_mode in ["ce", "cbr"]:
+        if self.drloc_mode in {"ce", "cbr"}:
             fps += 512 * 512 * self.sample_size
             fps += 512 * self.out_dim * self.sample_size
         return fps

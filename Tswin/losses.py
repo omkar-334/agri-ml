@@ -38,7 +38,7 @@ def relative_constraint_cbr(deltaxy, predxy, loss_type="regression_mse_var"):
     pred_idx = torch.sum(betax * labels, dim=1)  # [N, ]
     pred_idy = torch.sum(betay * labels, dim=1)  # [N, ]
 
-    if loss_type in ["regression_mse", "regression_mse_var"]:
+    if loss_type in {"regression_mse", "regression_mse_var"}:
         if "var" in loss_type:
             # Variance aware regression.
             lossx = variance_aware_regression(pred_idx, betax, true_idx, labels)
@@ -48,8 +48,7 @@ def relative_constraint_cbr(deltaxy, predxy, loss_type="regression_mse_var"):
             lossy = torch.mean((pred_idy - true_idy) ** 2)
         loss = lossx + lossy
         return loss
-    else:
-        raise NotImplementedError("We only support regression_mse and regression_mse_var now.")
+    raise NotImplementedError("We only support regression_mse and regression_mse_var now.")
 
 
 def cal_selfsupervised_loss(outs, args, lambda_drloc=0.0):
@@ -66,14 +65,11 @@ def cal_selfsupervised_loss(outs, args, lambda_drloc=0.0):
             raise NotImplementedError("We only support l1, ce and cbr now.")
 
         loss_drloc = 0.0
-        for deltaxy, drloc, plane_size in zip(outs.deltaxy, outs.drloc, outs.plz):
+        for deltaxy, drloc in zip(outs.deltaxy, outs.drloc):
             loss_drloc += reld_criterion(deltaxy, drloc) * lambda_drloc
             # loss_drloc += reld_criterion(deltaxy, drloc)
 
         all_losses.drloc = loss_drloc.item()
         loss += loss_drloc
 
-    return (
-        loss,
-        all_losses,
-    )
+    return (loss, all_losses)

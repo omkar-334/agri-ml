@@ -1,4 +1,5 @@
 import math
+import sys
 
 import numpy as np
 import torch
@@ -20,7 +21,7 @@ class MS_CAM(nn.Module):
     """
 
     def __init__(self, channels=32, r=4):
-        super(MS_CAM, self).__init__()
+        super().__init__()
         inter_channels = int(channels // r)
 
         # 局部注意力
@@ -58,7 +59,7 @@ class AFF(nn.Module):
     """
 
     def __init__(self, channels=64, r=4):
-        super(AFF, self).__init__()
+        super().__init__()
         inter_channels = int(channels // r)
 
         # 局部注意力
@@ -120,7 +121,7 @@ class MyConvDila(nn.Module):
         self.Para4 = nn.Parameter(torch.ones(32, 512, 49))
 
     def forward(self, z):
-        ListFinal = list()
+        ListFinal = []
         A = z[1]
         A = rearrange(A.transpose(1, 2), "b c (h w) -> b c h w", h=56)
         A = self.Conv1(A)
@@ -154,7 +155,7 @@ class MyConvDila(nn.Module):
         F = self.Conv4(F)
         ListFinal.append(F)
 
-        ListProcess = list()
+        ListProcess = []
         for i in range(len(ListFinal)):
             if i < 1:
                 # list0 = rearrange(ListFinal[i].transpose(1,2),'b c (h w) -> b c h w',h=56)
@@ -223,7 +224,7 @@ class LePEAttention(nn.Module):
             W_sp, H_sp = self.resolution, self.split_size
         else:
             print("ERROR MODE", idx)
-            exit(0)
+            sys.exit(0)
         self.H_sp = H_sp
         self.W_sp = W_sp
         self.get_v = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, groups=dim)
@@ -245,9 +246,9 @@ class LePEAttention(nn.Module):
 
         H_sp, W_sp = self.H_sp, self.W_sp
         x = x.view(B, C, H // H_sp, H_sp, W // W_sp, W_sp)
-        x = x.permute(0, 2, 4, 1, 3, 5).contiguous().reshape(-1, C, H_sp, W_sp)  ### B', C, H', W'
+        x = x.permute(0, 2, 4, 1, 3, 5).contiguous().reshape(-1, C, H_sp, W_sp)  # B', C, H', W'
 
-        lepe = func(x)  ### B', C, H', W'
+        lepe = func(x)  # B', C, H', W'
         lepe = lepe.reshape(-1, self.num_heads, C // self.num_heads, H_sp * W_sp).permute(0, 1, 3, 2).contiguous()
 
         x = x.reshape(-1, self.num_heads, C // self.num_heads, self.H_sp * self.W_sp).permute(0, 1, 3, 2).contiguous()
@@ -259,7 +260,7 @@ class LePEAttention(nn.Module):
         """
         q, k, v = qkv[0], qkv[1], qkv[2]
 
-        ### Img2Window
+        # Img2Window
         H = W = self.resolution
         B, L, C = q.shape
         assert L == H * W, "flatten img_tokens has wrong size"
@@ -276,7 +277,7 @@ class LePEAttention(nn.Module):
         x = (attn @ v) + lepe
         x = x.transpose(1, 2).reshape(-1, self.H_sp * self.W_sp, C)  # B head N N @ B head N C
 
-        ### Window2Img
+        # Window2Img
         x = windows2img(x, self.H_sp, self.W_sp, H, W).view(B, -1, C)  # B H' W' C
 
         return x
@@ -298,7 +299,7 @@ class ContentAttention(nn.Module):
         self.softmax = nn.Softmax(dim=-1)
         self.get_v = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, groups=dim)
 
-    def forward(self, x, mask=None):
+    def forward(self, x):
         # B_, W, H, C = x.shape
         # x = x.view(B_,W*H,C)
         B_, N, C = x.shape
@@ -307,7 +308,7 @@ class ContentAttention(nn.Module):
         qkv = self.qkv(x).reshape(B_, N, 3, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)  # 3, B_, self.num_heads,N,D
 
         q_pre = qkv[0].reshape(B_ * self.num_heads, N, C // self.num_heads).permute(0, 2, 1)  # qkv_pre[:,0].reshape(b*self.num_heads,qkvhd//3//self.num_heads,hh*ww)
-        ntimes = int(math.log(N // 49, 2))
+        ntimes = int(math.log2(N // 49))
         q_idx_last = torch.arange(N).cuda().unsqueeze(0).expand(B_ * self.num_heads, N)
         for i in range(ntimes):
             bh, d, n = q_pre.shape
@@ -452,7 +453,6 @@ class CSWinBlock(nn.Module):
         """
         x: B, H*W, C
         """
-
         H = W = self.patches_resolution
         B, L, C = x.shape
         assert L == H * W, "flatten img_tokens has wrong size"
@@ -679,7 +679,8 @@ class CSWinTransformer(nn.Module):
         trunc_normal_(self.head1.weight, std=0.02)
         self.apply(self._init_weights)
 
-    def _init_weights(self, m):
+    @staticmethod
+    def _init_weights(m):
         if isinstance(m, nn.Linear):
             trunc_normal_(m.weight, std=0.02)
             if isinstance(m, nn.Linear) and m.bias is not None:
@@ -688,14 +689,15 @@ class CSWinTransformer(nn.Module):
             nn.init.constant_(m.bias, 0)
             nn.init.constant_(m.weight, 1.0)
 
+    @staticmethod
     @torch.jit.ignore
-    def no_weight_decay(self):
+    def no_weight_decay():
         return {"pos_embed", "cls_token"}
 
     def get_classifier(self):
         return self.head
 
-    def reset_classifier(self, num_classes, model_class, global_pool=""):
+    def reset_classifier(self, num_classes, model_class):
         if self.num_classes != num_classes:
             print("reset head to", num_classes)
             self.num_classes = num_classes
@@ -709,7 +711,7 @@ class CSWinTransformer(nn.Module):
 
     def forward_features(self, x):
         x = self.stage1_conv_embed(x).cuda()
-        c = list()
+        c = []
         for blk in self.stage1:
             if self.use_chk:
                 x = checkpoint.checkpoint(blk, x)
@@ -737,8 +739,7 @@ class CSWinTransformer(nn.Module):
             x = self.LCA(L)
             x = [x]
         # x_last = self.LCATTen(x)
-        # x = [x]#因为这个x需要被变成列表被下面的drloc所使用，所以被改变
-        x_last = self.norm(x[-1])  # 注意，这个是不加lcatten才生效的，而且要将lca（L）返回值改为【U】。
+        x_last = self.norm(x[-1])
         pool = self.avgpool(x_last.transpose(1, 2))
         sup = self.head(torch.flatten(pool, 1))
         sup = self.head1(sup)

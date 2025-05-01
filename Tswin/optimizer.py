@@ -5,7 +5,7 @@
 # Written by Ze Liu
 # --------------------------------------------------------
 
-from torch import optim as optim
+from torch import optim
 
 
 def build_optimizer(config, model):
