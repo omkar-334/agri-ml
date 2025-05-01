@@ -1,10 +1,5 @@
-import contextlib
-import gc
 import os
-import sys
-import zipfile
 
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -17,7 +12,6 @@ from pytorch_grad_cam import (
 )
 from pytorch_grad_cam.utils.image import show_cam_on_image
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
-from tqdm import tqdm
 
 
 def tensor_to_rgb_image(tensor):
