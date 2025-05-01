@@ -25,10 +25,21 @@ from sklearn.metrics import classification_report
 from timm.utils import AverageMeter, accuracy
 from torch.utils.tensorboard import SummaryWriter
 
-from utils import get_grad_norm
-
 os.environ["MASTER_ADDR"] = "localhost"
 os.environ["MASTER_PORT"] = "5678"
+
+
+def get_grad_norm(parameters, norm_type=2):
+    if isinstance(parameters, torch.Tensor):
+        parameters = [parameters]
+    parameters = list(filter(lambda p: p.grad is not None, parameters))
+    norm_type = float(norm_type)
+    total_norm = 0
+    for p in parameters:
+        param_norm = p.grad.data.norm(norm_type)
+        total_norm += param_norm.item() ** norm_type
+    total_norm = total_norm ** (1.0 / norm_type)
+    return total_norm
 
 
 def _weight_decay(init_weight, epoch, warmup_epochs=10, total_epoch=300):
