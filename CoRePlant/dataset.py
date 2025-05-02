@@ -47,7 +47,7 @@ class UnlabeledWrapper(Dataset):
         return len(self.dataset)
 
 
-def get_mean_teacher_dataloaders(labeled_data_dir, labeled_ratio=0.2, batch_size=8):
+def get_mean_teacher_dataloaders(labeled_data_dir, labeled_ratio=0.2, batch_size=16):
     base_dataset = ImageFolder(labeled_data_dir, transform=basic_transform)
 
     total_size = len(base_dataset)

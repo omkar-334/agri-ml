@@ -56,9 +56,12 @@ def train_model(
             unlabeled_inputs += torch.clamp(torch.randn_like(unlabeled_inputs) * 0.1, -0.2, 0.2)
 
             # Forward pass for both labeled and unlabeled data
-            reconstructed, classification = model(labeled_inputs)  # Labeled data forward pass
-            reconstructed_unlabeled, _ = model(unlabeled_inputs)  # Unlabeled data forward pass
+            reconstructed, classification = model.train_forward(labeled_inputs)  # Labeled data forward pass
+            reconstructed_unlabeled, _ = model.train_forward(unlabeled_inputs)  # Unlabeled data forward pass
 
+            # print(f"Reconstructed shape: {reconstructed.shape}, Classification shape: {classification.shape}")
+            # print(f"Reconstructed unlabeled shape: {reconstructed_unlabeled.shape}")
+            # print(f"Labeled inputs shape: {labeled_inputs.shape}, unlabled inputs shape: {unlabeled_inputs.shape}")
             # Compute losses
             recon_loss_labeled = reconstruction_criterion(reconstructed, labeled_inputs)  # Unsupervised loss (labeled)
             recon_loss_unlabeled = reconstruction_criterion(reconstructed_unlabeled, unlabeled_inputs)  # Unsupervised loss (unlabeled)
@@ -106,7 +109,7 @@ def validate_model(model, validation_loader, num_classes):
     with torch.no_grad():
         for inputs, labels in tqdm(validation_loader, desc="Evaluating", leave=False):
             inputs, labels = inputs.to(DEVICE), labels.to(DEVICE)
-            _, outputs = model(inputs)
+            outputs = model(inputs)
             probs = torch.softmax(outputs, dim=1)
             preds = torch.argmax(probs, dim=1)
 

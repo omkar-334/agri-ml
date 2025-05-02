@@ -21,7 +21,7 @@ class UnlabeledWrapper(Dataset):
         return image
 
 
-def get_dataloaders(path, batch_size=32, labeled_ratio=0.2):
+def get_dataloaders(path, batch_size=32, labeled_ratio=0.2, num_workers=4):
     full_dataset = ImageFolder(path, transform=transform)
 
     total_size = len(full_dataset)
@@ -38,8 +38,8 @@ def get_dataloaders(path, batch_size=32, labeled_ratio=0.2):
     labeled_train_dataset, labeled_val_dataset = random_split(labeled_dataset, [labeled_train_size, labeled_val_size])
 
     # Create the DataLoaders
-    train_loader_labeled = DataLoader(labeled_train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
-    val_loader_labeled = DataLoader(labeled_val_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
-    train_loader_unlabeled = DataLoader(UnlabeledWrapper(unlabeled_dataset), batch_size=batch_size, shuffle=True, drop_last=True)
+    train_loader_labeled = DataLoader(labeled_train_dataset, batch_size=batch_size, shuffle=True, drop_last=True, num_workers=num_workers, pin_memory=True)
+    val_loader_labeled = DataLoader(labeled_val_dataset, batch_size=batch_size, shuffle=False, drop_last=False, num_workers=num_workers, pin_memory=True)
+    train_loader_unlabeled = DataLoader(UnlabeledWrapper(unlabeled_dataset), batch_size=batch_size, shuffle=True, drop_last=True, num_workers=num_workers, pin_memory=True)
 
     return train_loader_labeled, val_loader_labeled, train_loader_unlabeled

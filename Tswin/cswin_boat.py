@@ -580,7 +580,8 @@ class CSWinTransformer(nn.Module):
                 attn_drop=attn_drop_rate,
                 drop_path=dpr[i],
                 norm_layer=norm_layer,
-                content=(i % 2 == 0),
+                # content=(i % 2 == 0),
+                content=False,
             )
             for i in range(depth[0])
         ])
@@ -600,7 +601,8 @@ class CSWinTransformer(nn.Module):
                 attn_drop=attn_drop_rate,
                 drop_path=dpr[np.sum(depth[:1]) + i],
                 norm_layer=norm_layer,
-                content=(i % 2 == 0),
+                # content=(i % 2 == 0),
+                content=False,
             )
             for i in range(depth[1])
         ])
@@ -621,7 +623,8 @@ class CSWinTransformer(nn.Module):
                 attn_drop=attn_drop_rate,
                 drop_path=dpr[np.sum(depth[:2]) + i],
                 norm_layer=norm_layer,
-                content=(i % 2 == 0),
+                # content=(i % 2 == 0),
+                content=False,
             )
             for i in range(depth[2])
         ])
@@ -644,7 +647,8 @@ class CSWinTransformer(nn.Module):
                 drop_path=dpr[np.sum(depth[:-1]) + i],
                 norm_layer=norm_layer,
                 last_stage=True,
-                content=(i % 2 == 0),
+                # content=(i % 2 == 0),
+                content=False,
             )
             for i in range(depth[-1])
         ])
