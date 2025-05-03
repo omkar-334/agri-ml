@@ -4,8 +4,9 @@ import sys
 import zipfile
 from typing import Literal
 
-from huggingface_hub import HfApi, HfFolder, hf_hub_download, upload_file
+from huggingface_hub import HfApi, HfFolder, hf_hub_download, list_repo_files, upload_file
 from torch.utils.data import Subset
+from tqdm import tqdm
 
 
 def get_num_classes(train_loader):
@@ -19,10 +20,9 @@ def get_num_classes(train_loader):
 
 def upload(paths, repo="omkar334/agri", repo_type: Literal["model", "space", "dataset"] = "model", token=None):
     token = token or HfFolder.get_token()  # Automatically uses your token if logged in
-
     # api = HfApi()
 
-    for file_path in paths:
+    for file_path in tqdm(paths, desc="Uploading files"):
         filename = os.path.basename(file_path)
         print(f"Uploading {filename}...")
         upload_file(
@@ -39,12 +39,30 @@ def download(files, repo="omkar334/agri", local_dir="./models"):
     os.makedirs(local_dir, exist_ok=True)
 
     # Download each model
-    for filename in files:
+    for filename in tqdm(files, desc="Downloading files"):
         hf_hub_download(
             repo_id=repo,
             filename=filename,
             local_dir=local_dir,
         )
+
+
+def download_all_models(repo="omkar334/agri", local_dir="./models"):
+    os.makedirs(local_dir, exist_ok=True)
+    all_files = list_repo_files(repo_id=repo)
+
+    pth_files = [f for f in all_files if f.endswith(".pth")]
+
+    download(pth_files, repo=repo, local_dir=local_dir)
+
+
+def upload_all_models(repo="omkar334/agri", local_dir="./models"):
+    os.makedirs(local_dir, exist_ok=True)
+    all_files = os.listdir(local_dir)
+
+    pth_files = [f for f in all_files if f.endswith(".pth")]
+
+    upload(pth_files, repo=repo, local_dir=local_dir)
 
 
 def create_zip(output_dir, zip_filename="output.zip"):

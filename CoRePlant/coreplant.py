@@ -24,7 +24,7 @@ class EfficientNetModel(nn.Module):
 
 
 class Classifier(nn.Module):
-    def __init__(self, input_shape, hidden_units, num_classes, lbp_feature_size=26, dropout_rate=0.5):
+    def __init__(self, input_shape=512, hidden_units=256, num_classes=5, lbp_feature_size=26, dropout_rate=0.5):
         super().__init__()
         self.encoder = EfficientNetModel(embedding_size=input_shape)
         self.dropout_rate = dropout_rate

@@ -5,11 +5,13 @@
 # Written by Ze Liu
 # --------------------------------------------------------
 
+from config import get_config
 from cswin_boat import CSWinTransformer
 from swin import SwinTransformer
 
 
-def build_model(config, num_classes):
+def build_model(num_classes=5):
+    config = get_config()
     model_type = config.MODEL.TYPE
 
     if model_type == "swin":
