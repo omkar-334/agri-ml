@@ -71,5 +71,8 @@ for pct in percentages:
     # Train model
     trainer.train()
 
+    loss, metrics = trainer.validate()
+    print(metrics)
+
     # Close log and reset stdout
     sys.stdout.close()

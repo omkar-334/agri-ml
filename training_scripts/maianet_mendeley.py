@@ -70,6 +70,7 @@ for pct in percentages:
 
     # Train model
     trainer.train()
+    trainer.test()
 
     # Close log and reset stdout
     sys.stdout.close()

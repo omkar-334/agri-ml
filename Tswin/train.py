@@ -15,15 +15,16 @@ import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
 import torch.nn.init as init
-from build import build_model
-from config import get_config
-from logger import create_logger
-from losses import cal_selfsupervised_loss
-from lr_scheduler import build_scheduler
-from optimizer import build_optimizer
 from sklearn.metrics import classification_report
 from timm.utils import AverageMeter, accuracy
 from torch.utils.tensorboard import SummaryWriter
+
+from .build import build_model
+from .config import get_config
+from .logger import create_logger
+from .losses import cal_selfsupervised_loss
+from .lr_scheduler import build_scheduler
+from .optimizer import build_optimizer
 
 os.environ["MASTER_ADDR"] = "localhost"
 os.environ["MASTER_PORT"] = "5678"
@@ -43,14 +44,18 @@ def get_grad_norm(parameters, norm_type=2):
 
 
 def _weight_decay(init_weight, epoch, warmup_epochs=10, total_epoch=300):
-    if epoch <= warmup_epochs:  # noqa: SIM108
+    if epoch <= warmup_epochs:
         cur_weight = min(init_weight / warmup_epochs * epoch, init_weight)
     else:
-        cur_weight = init_weight * (1.0 - (epoch - warmup_epochs) / (total_epoch - warmup_epochs))
+        cur_weight = init_weight * (
+            1.0 - (epoch - warmup_epochs) / (total_epoch - warmup_epochs)
+        )
     return cur_weight
 
 
-def main(data_loader_train, data_loader_val, num_classes, save_path="./best-modelforall.pth"):
+def main(
+    data_loader_train, data_loader_val, num_classes, save_path="./best-modelforall.pth"
+):
     tb_write = SummaryWriter()
     config = get_config()
 
@@ -81,7 +86,7 @@ def main(data_loader_train, data_loader_val, num_classes, save_path="./best-mode
     logger = create_logger(output_dir=config.OUTPUT, name=f"{config.MODEL.NAME}")
 
     logger.info(f"Creating model:{config.MODEL.TYPE}/{config.MODEL.NAME}")
-    model = build_model(config, num_classes)
+    model = build_model(num_classes)
 
     model.cuda()
 
@@ -116,9 +121,25 @@ def main(data_loader_train, data_loader_val, num_classes, save_path="./best-mode
     init_lambda_drloc = 0.0
     for epoch in range(config.TRAIN.EPOCHS):
         if config.TRAIN.USE_DRLOC:
-            init_lambda_drloc = _weight_decay(config.TRAIN.LAMBDA_DRLOC, epoch, config.TRAIN.SSL_WARMUP_EPOCHS, config.TRAIN.EPOCHS)
+            init_lambda_drloc = _weight_decay(
+                config.TRAIN.LAMBDA_DRLOC,
+                epoch,
+                config.TRAIN.SSL_WARMUP_EPOCHS,
+                config.TRAIN.EPOCHS,
+            )
 
-        train_metrics = train_one_epoch(config, model, criterion_sup, criterion_ssup, data_loader_train, optimizer, epoch, lr_scheduler, logger, init_lambda_drloc)
+        train_metrics = train_one_epoch(
+            config,
+            model,
+            criterion_sup,
+            criterion_ssup,
+            data_loader_train,
+            optimizer,
+            epoch,
+            lr_scheduler,
+            logger,
+            init_lambda_drloc,
+        )
         abc = OrderedDict(epoch=epoch)
         abc.update([("train_" + k, v) for k, v in train_metrics.items()])
 
@@ -141,11 +162,22 @@ def main(data_loader_train, data_loader_val, num_classes, save_path="./best-mode
 
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
-    logger.info("Training time {}".format(total_time_str))
+    logger.info(f"Training time {total_time_str}")
     return model
 
 
-def train_one_epoch(config, model, criterion_sup, criterion_ssup, data_loader, optimizer, epoch, lr_scheduler, logger, lambda_drloc):
+def train_one_epoch(
+    config,
+    model,
+    criterion_sup,
+    criterion_ssup,
+    data_loader,
+    optimizer,
+    epoch,
+    lr_scheduler,
+    logger,
+    lambda_drloc,
+):
     model.train()
     optimizer.zero_grad()
 
@@ -176,7 +208,9 @@ def train_one_epoch(config, model, criterion_sup, criterion_ssup, data_loader, o
 
             loss.backward()
             if config.TRAIN.CLIP_GRAD:
-                grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), config.TRAIN.CLIP_GRAD)
+                grad_norm = torch.nn.utils.clip_grad_norm_(
+                    model.parameters(), config.TRAIN.CLIP_GRAD
+                )
             else:
                 grad_norm = get_grad_norm(model.parameters())
 
@@ -196,7 +230,9 @@ def train_one_epoch(config, model, criterion_sup, criterion_ssup, data_loader, o
 
             loss.backward()
             if config.TRAIN.CLIP_GRAD:
-                grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), config.TRAIN.CLIP_GRAD)
+                grad_norm = torch.nn.utils.clip_grad_norm_(
+                    model.parameters(), config.TRAIN.CLIP_GRAD
+                )
             else:
                 grad_norm = get_grad_norm(model.parameters())
 
@@ -225,12 +261,16 @@ def train_one_epoch(config, model, criterion_sup, criterion_ssup, data_loader, o
     )
     if config.TRAIN.USE_DRLOC:
         logger.info(f"weights: drloc {lambda_drloc:.4f}")
-        logger.info(" ".join(["%s: [%.4f]" % (key, value) for key, value in ssup_items.items()]))
+        logger.info(
+            " ".join(["%s: [%.4f]" % (key, value) for key, value in ssup_items.items()])
+        )
 
     epoch_time = time.time() - start
     # print(cc.item())
 
-    logger.info(f"EPOCH {epoch} training takes {datetime.timedelta(seconds=int(epoch_time))}")
+    logger.info(
+        f"EPOCH {epoch} training takes {datetime.timedelta(seconds=int(epoch_time))}"
+    )
     return OrderedDict([("loss", loss_meter.avg)])
 
 

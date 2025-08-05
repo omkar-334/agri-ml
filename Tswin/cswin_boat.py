@@ -5,11 +5,12 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.utils.checkpoint as checkpoint
-from aux_modules import DenseRelativeLoc
 from einops import rearrange
 from einops.layers.torch import Rearrange
 from munch import Munch
 from timm.models.layers import DropPath, trunc_normal_
+
+from .aux_modules import DenseRelativeLoc
 
 # from .helpers import build_model_with_cfg ,named_apply, checkpoint_seq
 # from .vision_transformer import checkpoint_filter_fn,get_init_weights_vit
@@ -104,16 +105,79 @@ class MyConvDila(nn.Module):
         self.Conv4 = MS_CAM(channels=512)
         self.Conv5 = AFF()
         self.conv1 = nn.Sequential(
-            nn.Conv2d(in_channels=64, out_channels=512, kernel_size=3, stride=1, dilation=1, padding=0),
-            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, stride=1, dilation=2, padding=0),
-            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, stride=1, dilation=5, padding=0),
-            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, stride=1, dilation=1, padding=0),
-            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, stride=2, dilation=2, padding=0),
-            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, stride=1, dilation=5, padding=0),
+            nn.Conv2d(
+                in_channels=64,
+                out_channels=512,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=0,
+            ),
+            nn.Conv2d(
+                in_channels=512,
+                out_channels=512,
+                kernel_size=3,
+                stride=1,
+                dilation=2,
+                padding=0,
+            ),
+            nn.Conv2d(
+                in_channels=512,
+                out_channels=512,
+                kernel_size=3,
+                stride=1,
+                dilation=5,
+                padding=0,
+            ),
+            nn.Conv2d(
+                in_channels=512,
+                out_channels=512,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=0,
+            ),
+            nn.Conv2d(
+                in_channels=512,
+                out_channels=512,
+                kernel_size=3,
+                stride=2,
+                dilation=2,
+                padding=0,
+            ),
+            nn.Conv2d(
+                in_channels=512,
+                out_channels=512,
+                kernel_size=3,
+                stride=1,
+                dilation=5,
+                padding=0,
+            ),
             nn.GELU(),
         )
-        self.conv2 = nn.Sequential(nn.Conv2d(in_channels=128, out_channels=512, kernel_size=3, stride=2, dilation=1, padding=1), nn.GELU(), nn.AvgPool2d(kernel_size=2, stride=2))
-        self.conv3 = nn.Sequential(nn.Conv2d(in_channels=256, out_channels=512, kernel_size=3, stride=2, dilation=1, padding=1), nn.GELU())
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(
+                in_channels=128,
+                out_channels=512,
+                kernel_size=3,
+                stride=2,
+                dilation=1,
+                padding=1,
+            ),
+            nn.GELU(),
+            nn.AvgPool2d(kernel_size=2, stride=2),
+        )
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(
+                in_channels=256,
+                out_channels=512,
+                kernel_size=3,
+                stride=2,
+                dilation=1,
+                padding=1,
+            ),
+            nn.GELU(),
+        )
         self.SIG = torch.nn.Sigmoid()
         self.Para1 = nn.Parameter(torch.ones(8, 1, 1, 1, 1))
         self.Para2 = nn.Parameter(torch.ones(32, 128, 784))
@@ -187,7 +251,14 @@ class MyConvDila(nn.Module):
 
 
 class Mlp(nn.Module):
-    def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, drop=0.0):
+    def __init__(
+        self,
+        in_features,
+        hidden_features=None,
+        out_features=None,
+        act_layer=nn.GELU,
+        drop=0.0,
+    ):
         super().__init__()
         out_features = out_features or in_features
         hidden_features = hidden_features or in_features
@@ -206,7 +277,18 @@ class Mlp(nn.Module):
 
 
 class LePEAttention(nn.Module):
-    def __init__(self, dim, resolution, idx, split_size=7, dim_out=None, num_heads=8, attn_drop=0.0, proj_drop=0.0, qk_scale=None):
+    def __init__(
+        self,
+        dim,
+        resolution,
+        idx,
+        split_size=7,
+        dim_out=None,
+        num_heads=8,
+        attn_drop=0.0,
+        proj_drop=0.0,
+        qk_scale=None,
+    ):
         super().__init__()
         self.dim = dim
         self.dim_out = dim_out or dim
@@ -236,7 +318,11 @@ class LePEAttention(nn.Module):
         H = W = int(np.sqrt(N))
         x = x.transpose(-2, -1).contiguous().view(B, C, H, W)
         x = img2windows(x, self.H_sp, self.W_sp)
-        x = x.reshape(-1, self.H_sp * self.W_sp, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3).contiguous()
+        x = (
+            x.reshape(-1, self.H_sp * self.W_sp, self.num_heads, C // self.num_heads)
+            .permute(0, 2, 1, 3)
+            .contiguous()
+        )
         return x
 
     def get_lepe(self, x, func):
@@ -246,12 +332,22 @@ class LePEAttention(nn.Module):
 
         H_sp, W_sp = self.H_sp, self.W_sp
         x = x.view(B, C, H // H_sp, H_sp, W // W_sp, W_sp)
-        x = x.permute(0, 2, 4, 1, 3, 5).contiguous().reshape(-1, C, H_sp, W_sp)  # B', C, H', W'
+        x = (
+            x.permute(0, 2, 4, 1, 3, 5).contiguous().reshape(-1, C, H_sp, W_sp)
+        )  # B', C, H', W'
 
         lepe = func(x)  # B', C, H', W'
-        lepe = lepe.reshape(-1, self.num_heads, C // self.num_heads, H_sp * W_sp).permute(0, 1, 3, 2).contiguous()
+        lepe = (
+            lepe.reshape(-1, self.num_heads, C // self.num_heads, H_sp * W_sp)
+            .permute(0, 1, 3, 2)
+            .contiguous()
+        )
 
-        x = x.reshape(-1, self.num_heads, C // self.num_heads, self.H_sp * self.W_sp).permute(0, 1, 3, 2).contiguous()
+        x = (
+            x.reshape(-1, self.num_heads, C // self.num_heads, self.H_sp * self.W_sp)
+            .permute(0, 1, 3, 2)
+            .contiguous()
+        )
         return x, lepe
 
     def forward(self, qkv):
@@ -275,7 +371,9 @@ class LePEAttention(nn.Module):
         attn = self.attn_drop(attn)
 
         x = (attn @ v) + lepe
-        x = x.transpose(1, 2).reshape(-1, self.H_sp * self.W_sp, C)  # B head N N @ B head N C
+        x = x.transpose(1, 2).reshape(
+            -1, self.H_sp * self.W_sp, C
+        )  # B head N N @ B head N C
 
         # Window2Img
         x = windows2img(x, self.H_sp, self.W_sp, H, W).view(B, -1, C)  # B H' W' C
@@ -284,7 +382,16 @@ class LePEAttention(nn.Module):
 
 
 class ContentAttention(nn.Module):
-    def __init__(self, dim, window_size, num_heads, qkv_bias=True, qk_scale=None, attn_drop=0.0, proj_drop=0.0):
+    def __init__(
+        self,
+        dim,
+        window_size,
+        num_heads,
+        qkv_bias=True,
+        qk_scale=None,
+        attn_drop=0.0,
+        proj_drop=0.0,
+    ):
         super().__init__()
         self.dim = dim
         self.window_size = window_size  # Wh, Ww
@@ -305,28 +412,49 @@ class ContentAttention(nn.Module):
         B_, N, C = x.shape
         # print(x.shape)
 
-        qkv = self.qkv(x).reshape(B_, N, 3, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)  # 3, B_, self.num_heads,N,D
+        qkv = (
+            self.qkv(x)
+            .reshape(B_, N, 3, self.num_heads, C // self.num_heads)
+            .permute(2, 0, 3, 1, 4)
+        )  # 3, B_, self.num_heads,N,D
 
-        q_pre = qkv[0].reshape(B_ * self.num_heads, N, C // self.num_heads).permute(0, 2, 1)  # qkv_pre[:,0].reshape(b*self.num_heads,qkvhd//3//self.num_heads,hh*ww)
+        q_pre = (
+            qkv[0].reshape(B_ * self.num_heads, N, C // self.num_heads).permute(0, 2, 1)
+        )  # qkv_pre[:,0].reshape(b*self.num_heads,qkvhd//3//self.num_heads,hh*ww)
         ntimes = int(math.log2(N // 49))
         q_idx_last = torch.arange(N).cuda().unsqueeze(0).expand(B_ * self.num_heads, N)
         for i in range(ntimes):
             bh, d, n = q_pre.shape
             q_pre_new = q_pre.reshape(bh, d, 2, n // 2)
-            q_avg = q_pre_new.mean(dim=-1)  # .reshape(b*self.num_heads,qkvhd//3//self.num_heads,)
+            q_avg = q_pre_new.mean(
+                dim=-1
+            )  # .reshape(b*self.num_heads,qkvhd//3//self.num_heads,)
             q_avg = torch.nn.functional.normalize(q_avg, dim=-2)
             iters = 2
             for i in range(iters):
-                q_scores = torch.nn.functional.normalize(q_pre.permute(0, 2, 1), dim=-1).bmm(q_avg)
-                soft_assign = torch.nn.functional.softmax(q_scores * 100, dim=-1).detach()
+                q_scores = torch.nn.functional.normalize(
+                    q_pre.permute(0, 2, 1), dim=-1
+                ).bmm(q_avg)
+                soft_assign = torch.nn.functional.softmax(
+                    q_scores * 100, dim=-1
+                ).detach()
                 q_avg = q_pre.bmm(soft_assign)
                 q_avg = torch.nn.functional.normalize(q_avg, dim=-2)
-            q_scores = torch.nn.functional.normalize(q_pre.permute(0, 2, 1), dim=-1).bmm(q_avg).reshape(bh, n, 2)  # .unsqueeze(2)
+            q_scores = (
+                torch.nn.functional.normalize(q_pre.permute(0, 2, 1), dim=-1)
+                .bmm(q_avg)
+                .reshape(bh, n, 2)
+            )  # .unsqueeze(2)
             q_idx = (q_scores[:, :, 0] + 1) / (q_scores[:, :, 1] + 1)
             _, q_idx = torch.sort(q_idx, dim=-1)
             q_idx_last = q_idx_last.gather(dim=-1, index=q_idx).reshape(bh * 2, n // 2)
             q_idx = q_idx.unsqueeze(1).expand(q_pre.size())
-            q_pre = q_pre.gather(dim=-1, index=q_idx).reshape(bh, d, 2, n // 2).permute(0, 2, 1, 3).reshape(bh * 2, d, n // 2)
+            q_pre = (
+                q_pre.gather(dim=-1, index=q_idx)
+                .reshape(bh, d, 2, n // 2)
+                .permute(0, 2, 1, 3)
+                .reshape(bh * 2, d, n // 2)
+            )
 
         q_idx = q_idx_last.view(B_, self.num_heads, N)
         _, q_idx_rev = torch.sort(q_idx, dim=-1)
@@ -338,13 +466,21 @@ class ContentAttention(nn.Module):
         k_over1 = k[:, 1, :, :20].unsqueeze(1)  # .expand(-1,2,-1,-1,-1)
         k_over2 = k[:, 0, :, 29:].unsqueeze(1)  # .expand(-1,2,-1,-1,-1)
         k_over = torch.cat([k_over1, k_over2], 1)
-        k = torch.cat([k, k_over], 3).contiguous().view(B_ * (N // 49), self.num_heads, 49 + 20, -1)
+        k = (
+            torch.cat([k, k_over], 3)
+            .contiguous()
+            .view(B_ * (N // 49), self.num_heads, 49 + 20, -1)
+        )
 
         v = v.view(B_ * (N // 49) // 2, 2, self.num_heads, 49, -1)
         v_over1 = v[:, 1, :, :20].unsqueeze(1)  # .expand(-1,2,-1,-1,-1)
         v_over2 = v[:, 0, :, 29:].unsqueeze(1)  # .expand(-1,2,-1,-1,-1)
         v_over = torch.cat([v_over1, v_over2], 1)
-        v = torch.cat([v, v_over], 3).contiguous().view(B_ * (N // 49), self.num_heads, 49 + 20, -1)
+        v = (
+            torch.cat([v, v_over], 3)
+            .contiguous()
+            .view(B_ * (N // 49), self.num_heads, 49 + 20, -1)
+        )
 
         # v = rearrange(v[:,:,:49,:], '(b nw) h ws d -> b h d (nw ws)', h=self.num_heads, b=B_)
         # W = int(math.sqrt(N))
@@ -360,7 +496,9 @@ class ContentAttention(nn.Module):
         q_idx_rev = q_idx_rev.unsqueeze(2).expand(out.size())
         x = out.gather(dim=-1, index=q_idx_rev).reshape(B_, C, N).permute(0, 2, 1)
 
-        v = rearrange(v[:, :, :49, :], "(b nw) h ws d -> b h d (nw ws)", h=self.num_heads, b=B_)
+        v = rearrange(
+            v[:, :, :49, :], "(b nw) h ws d -> b h d (nw ws)", h=self.num_heads, b=B_
+        )
         W = int(math.sqrt(N))
         v = v.gather(dim=-1, index=q_idx_rev).reshape(B_, C, W, W)
         v = self.get_v(v)
@@ -440,13 +578,25 @@ class CSWinBlock(nn.Module):
             ])
         if self.content:
             self.content_attn = ContentAttention(
-                dim=dim, window_size=split_size, num_heads=num_heads, qkv_bias=qkv_bias, qk_scale=qkv_bias, attn_drop=attn_drop, proj_drop=attn_drop
+                dim=dim,
+                window_size=split_size,
+                num_heads=num_heads,
+                qkv_bias=qkv_bias,
+                qk_scale=qkv_bias,
+                attn_drop=attn_drop,
+                proj_drop=attn_drop,
             )
             self.norm3 = norm_layer(dim)
         mlp_hidden_dim = int(dim * mlp_ratio)
 
         self.drop_path = DropPath(drop_path) if drop_path > 0.0 else nn.Identity()
-        self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, out_features=dim, act_layer=act_layer, drop=drop)
+        self.mlp = Mlp(
+            in_features=dim,
+            hidden_features=mlp_hidden_dim,
+            out_features=dim,
+            act_layer=act_layer,
+            drop=drop,
+        )
         self.norm2 = norm_layer(dim)
 
     def forward(self, x):
@@ -483,7 +633,9 @@ def img2windows(img, H_sp, W_sp):
     """
     B, C, H, W = img.shape
     img_reshape = img.view(B, C, H // H_sp, H_sp, W // W_sp, W_sp)
-    img_perm = img_reshape.permute(0, 2, 4, 3, 5, 1).contiguous().reshape(-1, H_sp * W_sp, C)
+    img_perm = (
+        img_reshape.permute(0, 2, 4, 3, 5, 1).contiguous().reshape(-1, H_sp * W_sp, C)
+    )
     return img_perm
 
 
@@ -554,7 +706,9 @@ class CSWinTransformer(nn.Module):
         self.use_chk = use_chk
         self.num_classes = num_classes
         # self.pos_embed = nn.Parameter(torch.zeros(1,nu))
-        self.num_features = self.embed_dim = embed_dim  # num_features for consistency with other models
+        self.num_features = self.embed_dim = (
+            embed_dim  # num_features for consistency with other models
+        )
         self.num_feature = int(embed_dim * 2 ** (self.num_layers - 1))
         heads = num_heads
         if with_lca:
@@ -562,11 +716,15 @@ class CSWinTransformer(nn.Module):
             # self.LCATTen = LCAAttention(dim=512,heads=4,dim_head=128,dropout=0)
 
         self.stage1_conv_embed = nn.Sequential(
-            nn.Conv2d(in_chans, embed_dim, 7, 4, 2), Rearrange("b c h w -> b (h w) c", h=img_size // 4, w=img_size // 4), nn.LayerNorm(embed_dim)
+            nn.Conv2d(in_chans, embed_dim, 7, 4, 2),
+            Rearrange("b c h w -> b (h w) c", h=img_size // 4, w=img_size // 4),
+            nn.LayerNorm(embed_dim),
         )
 
         curr_dim = embed_dim
-        dpr = [x.item() for x in torch.linspace(0, drop_path_rate, np.sum(depth))]  # stochastic depth decay rule
+        dpr = [
+            x.item() for x in torch.linspace(0, drop_path_rate, np.sum(depth))
+        ]  # stochastic depth decay rule
         self.stage1 = nn.ModuleList([
             CSWinBlock(
                 dim=curr_dim,
@@ -658,8 +816,15 @@ class CSWinTransformer(nn.Module):
                 for i_layer in range(self.num_layers):
                     self.drloc.append(
                         DenseRelativeLoc(
-                            in_dim=min(int(embed_dim * 2 ** (i_layer + 1)), self.num_feature),
-                            out_dim=2 if drloc_mode == "l1" else max(img_size // (4 * 2**i_layer), img_size // (4 * 2 ** (self.num_layers - 1))),
+                            in_dim=min(
+                                int(embed_dim * 2 ** (i_layer + 1)), self.num_feature
+                            ),
+                            out_dim=2
+                            if drloc_mode == "l1"
+                            else max(
+                                img_size // (4 * 2**i_layer),
+                                img_size // (4 * 2 ** (self.num_layers - 1)),
+                            ),
                             sample_size=sample_size,
                             drloc_mode=drloc_mode,
                             use_abs=use_abs,
@@ -669,7 +834,9 @@ class CSWinTransformer(nn.Module):
                 self.drloc.append(
                     DenseRelativeLoc(
                         in_dim=self.num_feature,
-                        out_dim=2 if drloc_mode == "l1" else img_size // (4 * 2 ** (self.num_layers - 1)),
+                        out_dim=2
+                        if drloc_mode == "l1"
+                        else img_size // (4 * 2 ** (self.num_layers - 1)),
                         sample_size=sample_size,
                         drloc_mode=drloc_mode,
                         use_abs=use_abs,
@@ -678,7 +845,9 @@ class CSWinTransformer(nn.Module):
         self.norm = norm_layer(curr_dim)
         self.avgpool = nn.AdaptiveAvgPool1d(1)
         # Classifier head
-        self.head = nn.Linear(curr_dim, num_classes) if num_classes > 0 else nn.Identity()
+        self.head = (
+            nn.Linear(curr_dim, num_classes) if num_classes > 0 else nn.Identity()
+        )
         self.head1 = nn.Linear(num_classes, model_class)
         trunc_normal_(self.head1.weight, std=0.02)
         self.apply(self._init_weights)
@@ -705,7 +874,11 @@ class CSWinTransformer(nn.Module):
         if self.num_classes != num_classes:
             print("reset head to", num_classes)
             self.num_classes = num_classes
-            self.head = nn.Linear(self.out_dim, num_classes) if num_classes > 0 else nn.Identity()
+            self.head = (
+                nn.Linear(self.out_dim, num_classes)
+                if num_classes > 0
+                else nn.Identity()
+            )
             self.head1 = nn.Linear(num_classes, model_class)
             # self.head = self.head.cuda()
             self.head1 = self.head1.cuda()
@@ -722,7 +895,10 @@ class CSWinTransformer(nn.Module):
             else:
                 x = blk(x)
                 c.append(x)
-        for pre, blocks in zip([self.merge1, self.merge2, self.merge3], [self.stage2, self.stage3, self.stage4]):
+        for pre, blocks in zip(
+            [self.merge1, self.merge2, self.merge3],
+            [self.stage2, self.stage3, self.stage4],
+        ):
             x = pre(x)
             c.append(x)
             for blk in blocks:
