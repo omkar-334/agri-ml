@@ -31,12 +31,17 @@ unzip -q sugarcane-leaf-disease-classification.zip -d data2
 
 # Unzip Mendeley dataset (make sure mendeley.zip exists)
 huggingface-cli login
-huggingface-cli download omkar334/agri mendeley.zip Visualization.zip --local-dir .
+huggingface-cli download omkar334/agri mendeley.zip --local-dir .
 unzip -q mendeley.zip -d data3
-unzip -q Visualization.zip -d vizdata
+
+# huggingface-cli download omkar334/agri Visualization.zip --local-dir .
+# unzip -q Visualization.zip -d vizdata
 
 # Clean up ZIP files after extraction
 rm -f mendeley.zip
 rm -f sugarcane-leaf-disease-dataset.zip
 rm -f sugarcane-leaf-disease-classification.zip
 rm -f Visualization.zip
+
+git clone https://github.com/omkar-334/agri-ml.git
+cd agri-ml

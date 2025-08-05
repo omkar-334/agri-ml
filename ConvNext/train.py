@@ -30,10 +30,14 @@ def train_model(
         unlabeled_iter = iter(train_dataloader_unlabeled)
 
         # Number of batches to iterate
-        num_batches = max(len(train_dataloader_labeled), len(train_dataloader_unlabeled))
+        num_batches = max(
+            len(train_dataloader_labeled), len(train_dataloader_unlabeled)
+        )
 
         # Progress bar
-        for i in tqdm(range(num_batches), desc=f"Epoch {epoch + 1}/{num_epochs}", leave=False):
+        for i in tqdm(
+            range(num_batches), desc=f"Epoch {epoch + 1}/{num_epochs}", leave=False
+        ):
             # Get the next batch from labeled and unlabeled data
             try:
                 labeled_inputs, labels = next(labeled_iter)
@@ -52,20 +56,34 @@ def train_model(
             unlabeled_inputs = unlabeled_inputs.to(DEVICE)
 
             # Inject Gaussian noise
-            labeled_inputs += torch.clamp(torch.randn_like(labeled_inputs) * 0.1, -0.2, 0.2)
-            unlabeled_inputs += torch.clamp(torch.randn_like(unlabeled_inputs) * 0.1, -0.2, 0.2)
+            labeled_inputs += torch.clamp(
+                torch.randn_like(labeled_inputs) * 0.1, -0.2, 0.2
+            )
+            unlabeled_inputs += torch.clamp(
+                torch.randn_like(unlabeled_inputs) * 0.1, -0.2, 0.2
+            )
 
             # Forward pass for both labeled and unlabeled data
-            reconstructed, classification = model.train_forward(labeled_inputs)  # Labeled data forward pass
-            reconstructed_unlabeled, _ = model.train_forward(unlabeled_inputs)  # Unlabeled data forward pass
+            reconstructed, classification = model.train_forward(
+                labeled_inputs
+            )  # Labeled data forward pass
+            reconstructed_unlabeled, _ = model.train_forward(
+                unlabeled_inputs
+            )  # Unlabeled data forward pass
 
             # print(f"Reconstructed shape: {reconstructed.shape}, Classification shape: {classification.shape}")
             # print(f"Reconstructed unlabeled shape: {reconstructed_unlabeled.shape}")
             # print(f"Labeled inputs shape: {labeled_inputs.shape}, unlabled inputs shape: {unlabeled_inputs.shape}")
             # Compute losses
-            recon_loss_labeled = reconstruction_criterion(reconstructed, labeled_inputs)  # Unsupervised loss (labeled)
-            recon_loss_unlabeled = reconstruction_criterion(reconstructed_unlabeled, unlabeled_inputs)  # Unsupervised loss (unlabeled)
-            class_loss_labeled = classification_criterion(classification, labels)  # Supervised loss (labeled)
+            recon_loss_labeled = reconstruction_criterion(
+                reconstructed, labeled_inputs
+            )  # Unsupervised loss (labeled)
+            recon_loss_unlabeled = reconstruction_criterion(
+                reconstructed_unlabeled, unlabeled_inputs
+            )  # Unsupervised loss (unlabeled)
+            class_loss_labeled = classification_criterion(
+                classification, labels
+            )  # Supervised loss (labeled)
 
             # Total loss
             total_recon_loss += recon_loss_labeled.item() + recon_loss_unlabeled.item()
@@ -97,10 +115,18 @@ def validate_model(model, validation_loader, num_classes):
     model.eval()
 
     # Initialize metrics for multi-class evaluation
-    accuracy = torchmetrics.Accuracy(num_classes=num_classes, task="multiclass").to(DEVICE)
-    precision = torchmetrics.Precision(num_classes=num_classes, task="multiclass", average="macro").to(DEVICE)
-    recall = torchmetrics.Recall(num_classes=num_classes, task="multiclass", average="macro").to(DEVICE)
-    f1 = torchmetrics.F1Score(num_classes=num_classes, task="multiclass", average="macro").to(DEVICE)
+    accuracy = torchmetrics.Accuracy(num_classes=num_classes, task="multiclass").to(
+        DEVICE
+    )
+    precision = torchmetrics.Precision(
+        num_classes=num_classes, task="multiclass", average="macro"
+    ).to(DEVICE)
+    recall = torchmetrics.Recall(
+        num_classes=num_classes, task="multiclass", average="macro"
+    ).to(DEVICE)
+    f1 = torchmetrics.F1Score(
+        num_classes=num_classes, task="multiclass", average="macro"
+    ).to(DEVICE)
 
     all_labels, all_preds, all_probs = [], [], []
     images = []
