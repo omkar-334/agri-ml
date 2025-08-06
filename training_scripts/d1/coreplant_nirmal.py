@@ -14,11 +14,11 @@ np.random.seed(42)
 # Create logs directory
 os.makedirs("logs", exist_ok=True)
 
-NUM_CLASSES = 11
+NUM_CLASSES = 5
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 for labeled_ratio in [0.1, 0.2, 0.3, 0.4, 0.5]:
-    log_filename = f"logs/coreplant_mendeley_{int(labeled_ratio * 100)}pct.log"
+    log_filename = f"logs/coreplant_nirmal_{int(labeled_ratio * 100)}pct.log"
 
     # Redirect stdout and stderr to log file
     sys.stdout = open(log_filename, "w")
@@ -28,7 +28,7 @@ for labeled_ratio in [0.1, 0.2, 0.3, 0.4, 0.5]:
         f"\n=== Training with {int(labeled_ratio * 100)}% of labeled training data ===\n"
     )
     train_loader, test_loader, unlabeled_loader, unlabeled_student_loader = (
-        get_mean_teacher_dataloaders("data3/mendeley", 0.2, 16)
+        get_mean_teacher_dataloaders("data2/Dataset", labeled_ratio, 16)
     )
 
     student = Classifier(512, 256, NUM_CLASSES).to(device)
@@ -49,6 +49,6 @@ for labeled_ratio in [0.1, 0.2, 0.3, 0.4, 0.5]:
     )
 
     print("Student Model:")
-    validate(student_model, test_loader, 11)
+    validate(student_model, test_loader, NUM_CLASSES)
     print("Teacher Model:")
-    validate(teacher, test_loader, 11)
+    validate(teacher, test_loader, NUM_CLASSES)

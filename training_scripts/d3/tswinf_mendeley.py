@@ -14,6 +14,8 @@ np.random.seed(42)
 # Create logs directory
 os.makedirs("logs", exist_ok=True)
 
+NUM_CLASSES = 11
+
 train_loader_full, val_loader, test_loader = prepare_dataloaders(
     "data3/mendeley",
     tswin_train_transform,
@@ -46,4 +48,4 @@ for pct in percentages:
         subset, batch_size=16, shuffle=True, num_workers=4
     )
 
-    model = main(train_loader, val_loader, 11, "models/tswinf_mendeley.pth")
+    model = main(train_loader, val_loader, NUM_CLASSES, "models/tswinf_mendeley.pth")

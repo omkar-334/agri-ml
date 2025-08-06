@@ -16,9 +16,10 @@ os.makedirs("logs", exist_ok=True)
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+NUM_CLASSES = 3
 
 for labeled_ratio in [0.1, 0.2, 0.3, 0.4, 0.5]:
-    log_filename = f"logs/convnext_mendeley_{int(labeled_ratio * 100)}pct.log"
+    log_filename = f"logs/convnext_pungliya_{int(labeled_ratio * 100)}pct.log"
 
     # Redirect stdout and stderr to log file
     sys.stdout = open(log_filename, "w")
@@ -30,12 +31,12 @@ for labeled_ratio in [0.1, 0.2, 0.3, 0.4, 0.5]:
 
     # Get dataloaders
     train_loader_labeled, val_loader_labeled, train_loader_unlabeled = get_dataloaders(
-        "data3/mendeley",
+        "data2/Dataset",
         16,
         labeled_ratio,
     )
 
-    model = Autoencoder(11).to(DEVICE)
+    model = Autoencoder(NUM_CLASSES).to(DEVICE)
 
     model = train_model(
         model,
@@ -45,4 +46,4 @@ for labeled_ratio in [0.1, 0.2, 0.3, 0.4, 0.5]:
         num_epochs=35,
     )
 
-    validate_model(model, val_loader_labeled, 11)
+    validate_model(model, val_loader_labeled, NUM_CLASSES)
