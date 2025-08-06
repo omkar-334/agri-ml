@@ -31,7 +31,7 @@ for labeled_ratio in [0.1, 0.2, 0.3, 0.4, 0.5]:
 
     # Get dataloaders
     train_loader_labeled, val_loader_labeled, train_loader_unlabeled = get_dataloaders(
-        "data2/Dataset",
+        "data",
         16,
         labeled_ratio,
     )

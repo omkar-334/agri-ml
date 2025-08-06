@@ -17,7 +17,7 @@ os.makedirs("logs", exist_ok=True)
 NUM_CLASSES = 5
 
 train_loader_full, val_loader, test_loader = prepare_dataloaders(
-    "data2/Dataset",
+    "data",
     tswin_train_transform,
     batch_size=16,
     num_workers=4,

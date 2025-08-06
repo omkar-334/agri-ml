@@ -28,7 +28,7 @@ for labeled_ratio in [0.1, 0.2, 0.3, 0.4, 0.5]:
         f"\n=== Training with {int(labeled_ratio * 100)}% of labeled training data ===\n"
     )
     train_loader, test_loader, unlabeled_loader, unlabeled_student_loader = (
-        get_mean_teacher_dataloaders("data2/Dataset", labeled_ratio, 16)
+        get_mean_teacher_dataloaders("data", labeled_ratio, 16)
     )
 
     student = Classifier(512, 256, NUM_CLASSES).to(device)
