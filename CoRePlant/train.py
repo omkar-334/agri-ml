@@ -37,16 +37,23 @@ class SupervisedContrastiveLoss(nn.Module):
     def forward(self, feature_vectors, labels):
         feature_vectors_normalized = F.normalize(feature_vectors, p=2, dim=1)
         logits = torch.div(
-            torch.matmul(feature_vectors_normalized, torch.transpose(feature_vectors_normalized, 0, 1)),
+            torch.matmul(
+                feature_vectors_normalized,
+                torch.transpose(feature_vectors_normalized, 0, 1),
+            ),
             self.temperature,
         )
         return F.cross_entropy(logits, labels)
 
 
-def update_teacher_model(student_model_classifier, teacher_model_classifier, global_step, alpha=0.99):
+def update_teacher_model(
+    student_model_classifier, teacher_model_classifier, global_step, alpha=0.99
+):
     # Use the true average until the exponential average is more correct
     alpha = min(1 - 1 / (global_step + 1), alpha)
-    for teacher_params, student_params in zip(teacher_model_classifier.parameters(), student_model_classifier.parameters()):
+    for teacher_params, student_params in zip(
+        teacher_model_classifier.parameters(), student_model_classifier.parameters()
+    ):
         teacher_params.data.mul_(alpha).add_(student_params.data, alpha=1 - alpha)
 
 
@@ -100,12 +107,18 @@ def mean_teacher_train(
     train_losses, test_losses = [], []
     train_accuracies, test_accuracies = [], []
 
-    train_accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes).to(device)
-    test_accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes).to(device)
+    train_accuracy = torchmetrics.Accuracy(
+        task="multiclass", num_classes=num_classes
+    ).to(device)
+    test_accuracy = torchmetrics.Accuracy(
+        task="multiclass", num_classes=num_classes
+    ).to(device)
 
     classifier_loss_fn = nn.CrossEntropyLoss()
 
-    optimizer = optim.AdamW(student.parameters(), lr=lr, weight_decay=1e-4)  # Only train classifier
+    optimizer = optim.AdamW(
+        student.parameters(), lr=lr, weight_decay=1e-4
+    )  # Only train classifier
     torch.cuda.empty_cache()
     scheduler = CosineAnnealingLR(optimizer, T_max=10, eta_min=1e-6)
     global_step = 0
@@ -121,7 +134,9 @@ def mean_teacher_train(
         unlabeled_iter_student_input = iter(unlabeled_student_loader)
         num_batches = max(len(train_loader), len(unlabeled_loader))
 
-        for i in tqdm(range(num_batches), desc=f"Epoch {epoch + 1}/{num_epochs}", leave=False):
+        for i in tqdm(
+            range(num_batches), desc=f"Epoch {epoch + 1}/{num_epochs}", leave=False
+        ):
             # Get next batch from labeled and unlabeled data
             try:
                 labeled_inputs, labels = next(labeled_iter)
@@ -132,18 +147,28 @@ def mean_teacher_train(
 
             try:
                 unlabeled_inputs, lbp_histograms = next(unlabeled_iter)
-                unlabeled_inputs_student_input, lbp_histograms_student_input = next(unlabeled_iter_student_input)
+                unlabeled_inputs_student_input, lbp_histograms_student_input = next(
+                    unlabeled_iter_student_input
+                )
             except StopIteration:
                 # Recycle the unlabeled data if it's exhausted
                 unlabeled_iter = iter(unlabeled_loader)
                 unlabeled_inputs, lbp_histograms = next(unlabeled_iter)
                 unlabeled_iter_student_input = iter(unlabeled_student_loader)
-                unlabeled_inputs_student_input, lbp_histograms_student_input = next(unlabeled_iter_student_input)
+                unlabeled_inputs_student_input, lbp_histograms_student_input = next(
+                    unlabeled_iter_student_input
+                )
 
             # Transfer data to device
             labeled_inputs, labels = labeled_inputs.to(device), labels.to(device)
-            unlabeled_inputs, lbp_histograms = unlabeled_inputs.to(device), lbp_histograms.to(device)
-            unlabeled_inputs_student_input, lbp_histograms_student_input = unlabeled_inputs_student_input.to(device), lbp_histograms_student_input.to(device)
+            unlabeled_inputs, lbp_histograms = (
+                unlabeled_inputs.to(device),
+                lbp_histograms.to(device),
+            )
+            unlabeled_inputs_student_input, lbp_histograms_student_input = (
+                unlabeled_inputs_student_input.to(device),
+                lbp_histograms_student_input.to(device),
+            )
 
             # Forward pass through the student model for labeled data
             optimizer.zero_grad()
@@ -151,7 +176,9 @@ def mean_teacher_train(
             supervised_loss = classifier_loss_fn(outputs_labeled, labels)
 
             # Forward pass through the student model for unlabeled data
-            outputs_unlabeled = student(unlabeled_inputs_student_input, lbp_histograms_student_input)
+            outputs_unlabeled = student(
+                unlabeled_inputs_student_input, lbp_histograms_student_input
+            )
 
             # Process the teacher model outputs
             with torch.no_grad():
@@ -169,11 +196,15 @@ def mean_teacher_train(
             optimizer.step()
 
             # Update running loss and accuracy
-            running_loss += total_loss.item() * (labeled_inputs.size(0) + unlabeled_inputs.size(0))
+            running_loss += total_loss.item() * (
+                labeled_inputs.size(0) + unlabeled_inputs.size(0)
+            )
             preds = torch.argmax(outputs_labeled, dim=1)
             train_accuracy.update(preds, labels)
 
-        epoch_loss = running_loss / (len(train_loader.dataset) + len(unlabeled_loader.dataset))
+        epoch_loss = running_loss / (
+            len(train_loader.dataset) + len(unlabeled_loader.dataset)
+        )
         epoch_acc = train_accuracy.compute().item()
         train_losses.append(epoch_loss)
         train_accuracies.append(epoch_acc)
@@ -241,13 +272,29 @@ def plot(results):
     plt.show()
 
 
-def validate(model, validation_loader, num_classes=5):
+import os
+
+import pandas as pd
+
+
+def validate(
+    model, validation_loader, num_classes=5, epoch=1, csv_path="validation_metrics.csv"
+):
     model.eval()
 
-    val_accuracy = torchmetrics.Accuracy(num_classes=num_classes, task="multiclass").to(device)
-    val_precision = torchmetrics.Precision(num_classes=num_classes, average="macro", task="multiclass").to(device)
-    val_recall = torchmetrics.Recall(num_classes=num_classes, average="macro", task="multiclass").to(device)
-    val_f1 = torchmetrics.F1Score(num_classes=num_classes, average="macro", task="multiclass").to(device)
+    # TorchMetrics
+    val_accuracy = torchmetrics.Accuracy(num_classes=num_classes, task="multiclass").to(
+        device
+    )
+    val_precision = torchmetrics.Precision(
+        num_classes=num_classes, average="macro", task="multiclass"
+    ).to(device)
+    val_recall = torchmetrics.Recall(
+        num_classes=num_classes, average="macro", task="multiclass"
+    ).to(device)
+    val_f1 = torchmetrics.F1Score(
+        num_classes=num_classes, average="macro", task="multiclass"
+    ).to(device)
 
     all_labels, all_preds, all_probs = [], [], []
     images = []
@@ -258,16 +305,19 @@ def validate(model, validation_loader, num_classes=5):
             outputs = model(inputs)
             preds = torch.argmax(outputs, dim=1)
 
+            # Update metrics
             val_accuracy.update(preds, labels)
             val_precision.update(preds, labels)
             val_recall.update(preds, labels)
             val_f1.update(preds, labels)
 
+            # Save labels and predictions
             all_labels.extend(labels.cpu().numpy())
             all_preds.extend(preds.cpu().numpy())
             all_probs.extend(torch.softmax(outputs, dim=1).cpu().numpy())
             images.extend(inputs.cpu())
 
+    # Compute scalar metrics
     val_acc = val_accuracy.compute().item()
     val_prec = val_precision.compute().item()
     val_rec = val_recall.compute().item()
@@ -280,7 +330,9 @@ def validate(model, validation_loader, num_classes=5):
 
     # Compute confusion matrix
     cm = confusion_matrix(all_labels, all_preds)
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=range(num_classes))
+    disp = ConfusionMatrixDisplay(
+        confusion_matrix=cm, display_labels=range(num_classes)
+    )
 
     # Plot confusion matrix
     plt.figure(figsize=(10, 8))
@@ -288,7 +340,37 @@ def validate(model, validation_loader, num_classes=5):
     plt.title("Confusion Matrix")
     plt.show()
 
+    # Derive TP, FP, FN, TN (aggregated across classes)
+    TP = cm.diagonal()
+    FP = cm.sum(axis=0) - TP
+    FN = cm.sum(axis=1) - TP
+    TN = cm.sum() - (TP + FP + FN)
 
-# torch.cuda.empty_cache()
-# student_model, results = mean_teacher_train(student_model_efficient, student_model_classifier, teacher_model_classifier, train_loader, unlabeled_loader, test_loader, num_epochs=35)
-# evaluate_and_display(teacher_model_classifier, validation_loader)
+    total_TP = TP.sum()
+    total_FP = FP.sum()
+    total_FN = FN.sum()
+    total_TN = TN.sum()
+
+    print(f"TP: {total_TP}, FP: {total_FP}, FN: {total_FN}, TN: {total_TN}")
+
+    # Save results incrementally to CSV
+    results = {
+        "epoch": epoch,
+        "accuracy": val_acc,
+        "precision": val_prec,
+        "recall": val_rec,
+        "f1": val_f1_score,
+        "tp": int(total_TP),
+        "tn": int(total_TN),
+        "fp": int(total_FP),
+        "fn": int(total_FN),
+        "num_samples": len(all_labels),
+    }
+
+    df = pd.DataFrame([results])
+    if not os.path.exists(csv_path):
+        df.to_csv(csv_path, index=False)  # Write header on first epoch
+    else:
+        df.to_csv(csv_path, mode="a", header=False, index=False)  # Append new rows
+
+    return results

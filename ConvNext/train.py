@@ -1,3 +1,6 @@
+import os
+
+import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -111,7 +114,9 @@ def train_model(
     return model
 
 
-def validate_model(model, validation_loader, num_classes):
+def validate_model(
+    model, validation_loader, num_classes, epoch, csv_path="validation_metrics.csv"
+):
     model.eval()
 
     # Initialize metrics for multi-class evaluation
@@ -127,9 +132,11 @@ def validate_model(model, validation_loader, num_classes):
     f1 = torchmetrics.F1Score(
         num_classes=num_classes, task="multiclass", average="macro"
     ).to(DEVICE)
+    confusion = torchmetrics.ConfusionMatrix(
+        num_classes=num_classes, task="multiclass"
+    ).to(DEVICE)
 
-    all_labels, all_preds, all_probs = [], [], []
-    images = []
+    all_labels, all_preds = [], []
     num_samples = 0
 
     with torch.no_grad():
@@ -144,12 +151,11 @@ def validate_model(model, validation_loader, num_classes):
             precision.update(preds, labels)
             recall.update(preds, labels)
             f1.update(preds, labels)
+            confusion.update(preds, labels)
 
-            # Store results for display
+            # Store results for confusion matrix
             all_labels.extend(labels.cpu().numpy())
             all_preds.extend(preds.cpu().numpy())
-            all_probs.extend(probs.cpu().numpy())
-            images.extend(inputs.cpu())
             num_samples += len(labels)
 
     # Compute final scores
@@ -157,16 +163,48 @@ def validate_model(model, validation_loader, num_classes):
     val_prec = precision.compute().item()
     val_rec = recall.compute().item()
     val_f1 = f1.compute().item()
+    cm = (
+        confusion.compute().cpu().numpy()
+    )  # Confusion matrix (num_classes x num_classes)
+
+    # For multi-class: compute TP, FP, FN, TN
+    TP = cm.diagonal()
+    FP = cm.sum(axis=0) - TP
+    FN = cm.sum(axis=1) - TP
+    TN = cm.sum() - (TP + FP + FN)
+
+    # Aggregate totals (across all classes)
+    total_TP = TP.sum()
+    total_FP = FP.sum()
+    total_FN = FN.sum()
+    total_TN = TN.sum()
 
     print(f"Validation Accuracy: {val_acc:.4f}")
     print(f"Validation Precision: {val_prec:.4f}")
     print(f"Validation Recall: {val_rec:.4f}")
     print(f"Validation F1 Score: {val_f1:.4f}")
     print(f"Number of samples validated on: {num_samples}")
+    print(f"TP: {total_TP}, FP: {total_FP}, FN: {total_FN}, TN: {total_TN}")
 
+    # Save results to CSV
+    results = {
+        "epoch": epoch,
+        "accuracy": val_acc,
+        "precision": val_prec,
+        "recall": val_rec,
+        "f1": val_f1,
+        "tp": int(total_TP),
+        "tn": int(total_TN),
+        "fp": int(total_FP),
+        "fn": int(total_FN),
+        "num_samples": num_samples,
+    }
 
-# autoencoder = Autoencoder().to(DEVICE)
+    df = pd.DataFrame([results])
 
-# # Losses and Optimizer
-# train_model(autoencoder, train_loader_labeled, train_loader_unlabeled)
-# validate_model(autoencoder, validation_loader)
+    if not os.path.exists(csv_path):
+        df.to_csv(csv_path, index=False)  # Create new file
+    else:
+        df.to_csv(csv_path, mode="a", header=False, index=False)  # Append
+
+    return results

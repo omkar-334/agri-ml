@@ -3,7 +3,20 @@ import pandas as pd
 from keras import optimizers
 from keras.applications import Xception
 from keras.applications.xception import preprocess_input
-from keras.layers import Activation, Add, BatchNormalization, Conv2D, Conv2DTranspose, Dense, Flatten, Reshape, SeparableConv2D, UpSampling2D, ZeroPadding2D, concatenate
+from keras.layers import (
+    Activation,
+    Add,
+    BatchNormalization,
+    Conv2D,
+    Conv2DTranspose,
+    Dense,
+    Flatten,
+    Reshape,
+    SeparableConv2D,
+    UpSampling2D,
+    ZeroPadding2D,
+    concatenate,
+)
 from keras.models import Model
 from sklearn.metrics import classification_report
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -13,12 +26,29 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 def load_generators(train_path, val_path, batch_size=16):
     train_datagen = ImageDataGenerator(
-        rotation_range=40, width_shift_range=0.1, height_shift_range=0.1, preprocessing_function=preprocess_input, horizontal_flip=False, fill_mode="nearest"
+        rotation_range=40,
+        width_shift_range=0.1,
+        height_shift_range=0.1,
+        preprocessing_function=preprocess_input,
+        horizontal_flip=False,
+        fill_mode="nearest",
     )
-    train_generator = train_datagen.flow_from_directory(train_path, target_size=(224, 224), shuffle=True, class_mode="categorical", batch_size=batch_size)
+    train_generator = train_datagen.flow_from_directory(
+        train_path,
+        target_size=(224, 224),
+        shuffle=True,
+        class_mode="categorical",
+        batch_size=batch_size,
+    )
 
     val_datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
-    val_generator = val_datagen.flow_from_directory(val_path, target_size=(224, 224), class_mode="categorical", shuffle=True, batch_size=batch_size)
+    val_generator = val_datagen.flow_from_directory(
+        val_path,
+        target_size=(224, 224),
+        class_mode="categorical",
+        shuffle=True,
+        batch_size=batch_size,
+    )
     return train_generator, val_generator
 
 
@@ -26,11 +56,15 @@ def load_generators(train_path, val_path, batch_size=16):
 # For sugarcane dataset, the number of classes is 5 and the input shape is (224, 224, 3)
 def load_model(num_classes=38, input_shape=(224, 224, 3)):
     # Encoder Start
-    base_model1 = Xception(include_top=False, weights="imagenet", input_shape=input_shape)
+    base_model1 = Xception(
+        include_top=False, weights="imagenet", input_shape=input_shape
+    )
     x1_0 = base_model1.output
     x1_0 = Flatten(name="Flatten1")(x1_0)
     dense1 = Dense(256, name="fc1", activation="relu")(x1_0)
-    x = classif_out_encoder1 = Dense(num_classes, name="out1", activation="softmax")(dense1)  # Latent Representation / Bottleneck
+    x = classif_out_encoder1 = Dense(num_classes, name="out1", activation="softmax")(
+        dense1
+    )  # Latent Representation / Bottleneck
 
     # Get Xception's tensors for skip connection.
     conv14 = base_model1.get_layer("block14_sepconv2_act").output
@@ -197,7 +231,9 @@ def load_model(num_classes=38, input_shape=(224, 224, 3)):
     x = SeparableConv2D(256, (3, 3), padding="same")(x)
     x = BatchNormalization()(x)
 
-    c34 = Conv2D(256, (3, 3), padding="valid")(Conv2DTranspose(1, (3, 3), strides=(2, 2))(add10))
+    c34 = Conv2D(256, (3, 3), padding="valid")(
+        Conv2DTranspose(1, (3, 3), strides=(2, 2))(add10)
+    )
     x = add11 = Add()([c34, x])
 
     # BLOCK 13
@@ -210,7 +246,9 @@ def load_model(num_classes=38, input_shape=(224, 224, 3)):
     x = SeparableConv2D(128, (3, 3), padding="same")(x)
     x = BatchNormalization()(x)
 
-    c23 = Conv2D(128, (3, 3), padding="valid")(Conv2DTranspose(1, (3, 3), strides=(2, 2))(add11))
+    c23 = Conv2D(128, (3, 3), padding="valid")(
+        Conv2DTranspose(1, (3, 3), strides=(2, 2))(add11)
+    )
     x = Add()([c23, x])
 
     # BLOCK 14
@@ -233,7 +271,9 @@ def load_model(num_classes=38, input_shape=(224, 224, 3)):
     )(x)
     mask = x = Conv2D(3, 1, activation="sigmoid", name="Mask")(x)
 
-    base_model2 = Xception(include_top=False, weights="imagenet", input_shape=(224, 224, 3))
+    base_model2 = Xception(
+        include_top=False, weights="imagenet", input_shape=(224, 224, 3)
+    )
     x2_0 = base_model2(mask)
     x2_0 = Flatten(name="Flatten2")(x2_0)
     x2_1 = Dense(256, name="fc2", activation="relu")(x2_0)
@@ -243,7 +283,15 @@ def load_model(num_classes=38, input_shape=(224, 224, 3)):
 
 
 # train_generator, valid_generator = load_generators(train_path, val_path, batch_size)
-def train_model(model, train_generator, valid_generator, batch_size=16, lr=0.0001, epochs=35, alpha=0.4):
+def train_model(
+    model,
+    train_generator,
+    valid_generator,
+    batch_size=16,
+    lr=0.0001,
+    epochs=35,
+    alpha=0.4,
+):
     train_steps = len(train_generator) // batch_size
     val_steps = len(valid_generator) // batch_size
 
@@ -300,7 +348,9 @@ def validate_model(model, valid_generator, batch_size=16):
         y_true.extend(np.argmax(y_batch["out2"], axis=1))
         y_pred.extend(np.argmax(preds[1], axis=1))
 
-    report_dict = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
+    report_dict = classification_report(
+        y_true, y_pred, output_dict=True, zero_division=0
+    )
     report_df = pd.DataFrame(report_dict).transpose()
     report_df.to_csv("classification_report.csv", float_format="%.4f")
 

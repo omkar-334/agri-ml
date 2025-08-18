@@ -1,6 +1,5 @@
-source mykernel/bin/activate
-
-cd agri-ml
+#!/bin/bash
+export PYTHONPATH=$(pwd)
 
 python training_scripts/d3/soyatrans_mendeley.py
 python training_scripts/d3/coreplant_mendeley.py

@@ -318,9 +318,14 @@ def train_one_epoch(
 #     logger.info(f" * Acc@1 {acc1_meter.avg:.3f} Acc@5 {acc5_meter.avg:.3f}")
 #     return acc1_meter.avg, acc5_meter.avg, loss_meter.avg
 
+import os
+
+import pandas as pd
+from sklearn.metrics import confusion_matrix
+
 
 @torch.no_grad()
-def validate(data_loader, model, logger):
+def validate(data_loader, model, logger, epoch=None, csv_path="validation_metrics.csv"):
     criterion = torch.nn.CrossEntropyLoss()
     model.eval()
 
@@ -345,7 +350,7 @@ def validate(data_loader, model, logger):
         acc1_meter.update(acc1.item(), target.size(0))
         acc5_meter.update(acc5.item(), target.size(0))
 
-        # collect predictions and targets for classification report
+        # collect predictions and targets
         preds = torch.argmax(output.sup, dim=1)
         all_preds.append(preds.cpu().numpy())
         all_labels.append(target.cpu().numpy())
@@ -353,7 +358,7 @@ def validate(data_loader, model, logger):
         batch_time.update(time.time() - end)
         end = time.time()
 
-    # flatten all_preds and all_labels
+    # flatten
     all_preds = np.concatenate(all_preds)
     all_labels = np.concatenate(all_labels)
 
@@ -368,9 +373,44 @@ def validate(data_loader, model, logger):
     )
     logger.info(f" * Acc@1 {acc1_meter.avg:.3f} Acc@5 {acc5_meter.avg:.3f}")
 
-    # ADD: classification report
+    # Classification report
     report = classification_report(all_labels, all_preds, digits=4, zero_division=0)
     logger.info(f"\nClassification Report:\n{report}")
+
+    # Confusion matrix for TP/TN/FP/FN
+    cm = confusion_matrix(all_labels, all_preds)
+    TP = cm.diagonal()
+    FP = cm.sum(axis=0) - TP
+    FN = cm.sum(axis=1) - TP
+    TN = cm.sum() - (TP + FP + FN)
+
+    total_TP = TP.sum()
+    total_FP = FP.sum()
+    total_FN = FN.sum()
+    total_TN = TN.sum()
+
+    logger.info(
+        f"Confusion Matrix Totals - TP: {total_TP}, TN: {total_TN}, FP: {total_FP}, FN: {total_FN}"
+    )
+
+    # Save incrementally to CSV
+    results = {
+        "epoch": epoch,
+        "acc1": acc1_meter.avg,
+        "acc5": acc5_meter.avg,
+        "loss": loss_meter.avg,
+        "tp": int(total_TP),
+        "tn": int(total_TN),
+        "fp": int(total_FP),
+        "fn": int(total_FN),
+        "num_samples": len(all_labels),
+    }
+    df = pd.DataFrame([results])
+
+    if not os.path.exists(csv_path):
+        df.to_csv(csv_path, index=False)
+    else:
+        df.to_csv(csv_path, mode="a", header=False, index=False)
 
     return acc1_meter.avg, acc5_meter.avg, loss_meter.avg
 

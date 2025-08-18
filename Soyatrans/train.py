@@ -1,13 +1,30 @@
+import os
+
+import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+from sklearn.metrics import (
+    accuracy_score,
+    confusion_matrix,
+    precision_recall_fscore_support,
+)
 from torch.optim.lr_scheduler import ExponentialLR
 from tqdm import tqdm
 
 
 class Trainer:
-    def __init__(self, model, train_loader, val_loader, test_loader, lr=0.0001, num_epochs=80, batch_size=32, scheduler=True):
+    def __init__(
+        self,
+        model,
+        train_loader,
+        val_loader,
+        test_loader,
+        lr=0.0001,
+        num_epochs=80,
+        batch_size=32,
+        scheduler=True,
+    ):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = model.to(self.device)
 
@@ -23,8 +40,17 @@ class Trainer:
 
         # add L2 regularization to the optimizer
         # self.optimizer = optim.SGD(self.model.parameters(), lr=self.lr, momentum=0.9, weight_decay=1e-5)
-        self.optimizer = optim.Adagrad(self.model.parameters(), lr=self.lr, lr_decay=1e-6, weight_decay=1e-5, initial_accumulator_value=0, eps=1e-10)
-        self.scheduler = ExponentialLR(self.optimizer, gamma=0.96) if scheduler else None
+        self.optimizer = optim.Adagrad(
+            self.model.parameters(),
+            lr=self.lr,
+            lr_decay=1e-6,
+            weight_decay=1e-5,
+            initial_accumulator_value=0,
+            eps=1e-10,
+        )
+        self.scheduler = (
+            ExponentialLR(self.optimizer, gamma=0.96) if scheduler else None
+        )
         self.criterion = nn.CrossEntropyLoss().to(self.device)
 
         self.best_val_loss = float("inf")
@@ -59,7 +85,7 @@ class Trainer:
         return total_loss / len(self.train_loader)
 
     @torch.no_grad()
-    def validate(self):
+    def validate(self, epoch=None, csv_path="validation_metrics.csv"):
         self.model.eval()
         total_loss = 0
         all_preds, all_labels = [], []
@@ -82,18 +108,67 @@ class Trainer:
         avg_loss = total_loss / len(self.val_loader.dataset)
         metrics = self.calculate_metrics(all_preds, all_labels)
 
+        # Confusion matrix for TP/TN/FP/FN
+        cm = confusion_matrix(all_labels, all_preds)
+        TP = cm.diagonal()
+        FP = cm.sum(axis=0) - TP
+        FN = cm.sum(axis=1) - TP
+        TN = cm.sum() - (TP + FP + FN)
+
+        total_TP = TP.sum()
+        total_FP = FP.sum()
+        total_FN = FN.sum()
+        total_TN = TN.sum()
+
+        # Add to metrics dict
+        metrics.update({
+            "tp": int(total_TP),
+            "tn": int(total_TN),
+            "fp": int(total_FP),
+            "fn": int(total_FN),
+            "val_loss": avg_loss,
+        })
+
+        # Save incrementally to CSV
+        row = {"epoch": epoch} if epoch is not None else {}
+        row.update(metrics)
+
+        df = pd.DataFrame([row])
+        if not os.path.exists(csv_path):
+            df.to_csv(csv_path, index=False)
+        else:
+            df.to_csv(csv_path, mode="a", header=False, index=False)
+
         return avg_loss, metrics
 
     @staticmethod
     def calculate_metrics(predictions, labels):
         accuracy = accuracy_score(labels, predictions)
-        precision, recall, f1, _ = precision_recall_fscore_support(labels, predictions, average="weighted", zero_division=0)
-        return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1}
+        precision, recall, f1, _ = precision_recall_fscore_support(
+            labels, predictions, average="weighted", zero_division=0
+        )
+        return {
+            "accuracy": accuracy,
+            "precision": precision,
+            "recall": recall,
+            "f1": f1,
+        }
 
-    def print_metrics(self, metrics, phase, epoch=None, train_loss=None, test_loss=None, val_loss=None, filename="metrics_log.txt"):
+    def print_metrics(
+        self,
+        metrics,
+        phase,
+        epoch=None,
+        train_loss=None,
+        test_loss=None,
+        val_loss=None,
+        filename="metrics_log.txt",
+    ):
         log_entry = [f"\n{phase} Metrics:", "-" * 50]
         if epoch == 1:
-            log_entry.append(f"Running experiment with batch_size={self.batch_size}, lr={self.lr}")
+            log_entry.append(
+                f"Running experiment with batch_size={self.batch_size}, lr={self.lr}"
+            )
         if epoch is not None:
             log_entry.append(f"Epoch: {epoch}")
         if train_loss is not None:
@@ -122,15 +197,19 @@ class Trainer:
 
                 if val_loss < self.best_val_loss:
                     self.best_val_loss = val_loss
-                    self.best_model_state = {k: v.cpu() for k, v in self.model.state_dict().items()}
+                    self.best_model_state = {
+                        k: v.cpu() for k, v in self.model.state_dict().items()
+                    }
 
         except Exception as e:
-            print(f"Training interrupted: {str(e)}")
+            print(f"Training interrupted: {e!s}")
             if self.best_model_state is not None:
                 torch.save(self.best_model_state, "interrupted_model.pt")
 
     def test(self):
         if self.best_model_state is not None:
-            self.model.load_state_dict({k: v.to(self.device) for k, v in self.best_model_state.items()})
+            self.model.load_state_dict({
+                k: v.to(self.device) for k, v in self.best_model_state.items()
+            })
         test_loss, test_metrics = self.validate()
         self.print_metrics(test_metrics, "Test", test_loss=test_loss)

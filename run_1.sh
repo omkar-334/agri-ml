@@ -1,6 +1,5 @@
-source mykernel/bin/activate
-
-cd agri-ml
+#!/bin/bash
+export PYTHONPATH=$(pwd)
 
 python training_scripts/d1/convnext_nirmal.py
 # python training_scripts/d1/coreplant_nirmal.py
