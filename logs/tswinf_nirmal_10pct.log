@@ -1,0 +1,37 @@
+
+=== Training with 10% of labeled training data ===
+
+[2025-08-06 07:18:08 CSWin_BOAT_64_24322_small_224](train.py 88): INFO Creating model:cswin_boat/CSWin_BOAT_64_24322_small_224
+[2025-08-06 07:18:08 CSWin_BOAT_64_24322_small_224](train.py 97): INFO number of params: 54765997
+[2025-08-06 07:18:08 CSWin_BOAT_64_24322_small_224](train.py 118): INFO Start training
+[2025-08-06 07:18:18 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [0/35]	eta 0:00:00 lr 0.000039	time 2.0822 (0.7011)	loss 1.6153 (1.6088)	grad_norm 1.4491 (0.9987)	mem 5094MB
+[2025-08-06 07:18:18 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 0 training takes 0:00:09
+[2025-08-06 07:18:21 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.301 (0.095)	Loss 1.5693 (1.6066)	Acc@1 62.500 (21.627)	Acc@5 100.000 (100.000)	Mem 5094MB
+[2025-08-06 07:18:21 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 21.627 Acc@5 100.000
+[2025-08-06 07:18:21 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000       115
+           1     0.0000    0.0000    0.0000        85
+           2     0.0000    0.0000    0.0000       104
+           3     0.1923    0.0532    0.0833        94
+           4     0.2176    0.9811    0.3562       106
+
+    accuracy                         0.2163       504
+   macro avg     0.0820    0.2069    0.0879       504
+weighted avg     0.0816    0.2163    0.0904       504
+
+[2025-08-06 07:18:21 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 21.6%
+Traceback (most recent call last):
+  File "/lambda/nfs/cal-fs/agri-ml/training_scripts/d1/tswinf_nirmal.py", line 51, in <module>
+    model = main(train_loader, val_loader, NUM_CLASSES, "models/tswinf_nirmal.pth")
+  File "/lambda/nfs/cal-fs/agri-ml/Tswin/train.py", line 156, in main
+    torch.save(model.state_dict(), save_path)
+  File "/lambda/nfs/cal-fs/mykernel/lib/python3.10/site-packages/torch/serialization.py", line 964, in save
+    with _open_zipfile_writer(f) as opened_zipfile:
+  File "/lambda/nfs/cal-fs/mykernel/lib/python3.10/site-packages/torch/serialization.py", line 828, in _open_zipfile_writer
+    return container(name_or_buffer)
+  File "/lambda/nfs/cal-fs/mykernel/lib/python3.10/site-packages/torch/serialization.py", line 792, in __init__
+    torch._C.PyTorchFileWriter(
+RuntimeError: Parent directory models does not exist.

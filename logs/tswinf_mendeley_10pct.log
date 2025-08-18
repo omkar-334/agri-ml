@@ -1,0 +1,1102 @@
+
+=== Training with 10% of labeled training data ===
+
+[2025-08-13 11:27:38 CSWin_BOAT_64_24322_small_224](train.py 88): INFO Creating model:cswin_boat/CSWin_BOAT_64_24322_small_224
+[2025-08-13 11:27:40 CSWin_BOAT_64_24322_small_224](train.py 97): INFO number of params: 54769177
+[2025-08-13 11:27:40 CSWin_BOAT_64_24322_small_224](train.py 118): INFO Start training
+[2025-08-13 11:28:17 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [0/35]	eta 0:00:01 lr 0.000040	time 14.4423 (1.0882)	loss 2.1876 (2.3320)	grad_norm 3.2446 (1.7485)	mem 12495MB
+[2025-08-13 11:28:17 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 0 training takes 0:00:37
+[2025-08-13 11:28:37 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 13.871 (0.235)	Loss 2.3460 (2.2833)	Acc@1 20.000 (25.945)	Acc@5 40.000 (70.200)	Mem 12495MB
+[2025-08-13 11:28:37 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 70.200
+[2025-08-13 11:28:37 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:28:37 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:28:37 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:28:44 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [1/35]	eta 0:00:00 lr 0.000080	time 0.2070 (0.2195)	loss 2.1219 (2.2448)	grad_norm 3.6314 (2.7122)	mem 12495MB
+[2025-08-13 11:28:44 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 1 training takes 0:00:07
+[2025-08-13 11:28:51 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.072)	Loss 2.3459 (2.2488)	Acc@1 20.000 (25.945)	Acc@5 60.000 (70.274)	Mem 12495MB
+[2025-08-13 11:28:51 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 70.274
+[2025-08-13 11:28:51 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:28:51 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:28:51 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:28:58 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [2/35]	eta 0:00:00 lr 0.000120	time 0.2154 (0.2198)	loss 2.4528 (2.2002)	grad_norm 4.1839 (3.3232)	mem 12495MB
+[2025-08-13 11:28:58 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 2 training takes 0:00:07
+[2025-08-13 11:29:04 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.072)	Loss 2.4038 (2.2121)	Acc@1 20.000 (25.945)	Acc@5 60.000 (71.090)	Mem 12495MB
+[2025-08-13 11:29:04 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 71.090
+[2025-08-13 11:29:04 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:29:04 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:29:04 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:29:12 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [3/35]	eta 0:00:00 lr 0.000159	time 0.1944 (0.2112)	loss 2.1200 (2.1643)	grad_norm 4.3597 (3.7006)	mem 12495MB
+[2025-08-13 11:29:12 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 3 training takes 0:00:07
+[2025-08-13 11:29:18 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.063 (0.072)	Loss 2.4773 (2.1887)	Acc@1 20.000 (25.945)	Acc@5 60.000 (70.052)	Mem 12495MB
+[2025-08-13 11:29:18 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 70.052
+[2025-08-13 11:29:18 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:29:18 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:29:18 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:29:25 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [4/35]	eta 0:00:00 lr 0.000199	time 0.2050 (0.2181)	loss 2.1328 (2.1481)	grad_norm 5.1277 (3.7001)	mem 12495MB
+[2025-08-13 11:29:25 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 4 training takes 0:00:07
+[2025-08-13 11:29:31 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.072)	Loss 2.6044 (2.1774)	Acc@1 20.000 (25.945)	Acc@5 40.000 (70.423)	Mem 12495MB
+[2025-08-13 11:29:31 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 70.423
+[2025-08-13 11:29:31 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:29:31 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:29:31 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:29:39 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [5/35]	eta 0:00:00 lr 0.000200	time 0.2107 (0.2193)	loss 2.0323 (2.1409)	grad_norm 3.3075 (3.7677)	mem 12495MB
+[2025-08-13 11:29:39 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 5 training takes 0:00:07
+[2025-08-13 11:29:45 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.063 (0.072)	Loss 2.6100 (2.1824)	Acc@1 20.000 (25.945)	Acc@5 40.000 (69.533)	Mem 12495MB
+[2025-08-13 11:29:45 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 69.533
+[2025-08-13 11:29:45 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:29:45 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:29:45 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:29:53 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [6/35]	eta 0:00:00 lr 0.000200	time 0.2059 (0.2187)	loss 2.0945 (2.1229)	grad_norm 4.6745 (3.9566)	mem 12495MB
+[2025-08-13 11:29:53 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 6 training takes 0:00:07
+[2025-08-13 11:29:59 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.072)	Loss 2.4964 (2.1635)	Acc@1 20.000 (25.945)	Acc@5 60.000 (72.424)	Mem 12495MB
+[2025-08-13 11:29:59 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 72.424
+[2025-08-13 11:29:59 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:29:59 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:29:59 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:30:06 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [7/35]	eta 0:00:00 lr 0.000200	time 0.2061 (0.2198)	loss 1.9523 (2.1033)	grad_norm 5.2107 (3.9153)	mem 12495MB
+[2025-08-13 11:30:06 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 7 training takes 0:00:07
+[2025-08-13 11:30:12 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.072)	Loss 2.6344 (2.1523)	Acc@1 20.000 (25.945)	Acc@5 40.000 (71.164)	Mem 12495MB
+[2025-08-13 11:30:12 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 71.164
+[2025-08-13 11:30:12 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:30:12 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:30:12 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:30:20 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [8/35]	eta 0:00:00 lr 0.000200	time 0.1969 (0.2169)	loss 2.0237 (2.1025)	grad_norm 5.6166 (4.1488)	mem 12495MB
+[2025-08-13 11:30:20 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 8 training takes 0:00:07
+[2025-08-13 11:30:26 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.071)	Loss 2.6512 (2.1293)	Acc@1 20.000 (25.945)	Acc@5 40.000 (72.350)	Mem 12495MB
+[2025-08-13 11:30:26 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 72.350
+[2025-08-13 11:30:26 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:30:26 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:30:26 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:30:33 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [9/35]	eta 0:00:00 lr 0.000200	time 0.1958 (0.2130)	loss 2.1022 (2.1000)	grad_norm 3.0947 (3.8339)	mem 12495MB
+[2025-08-13 11:30:33 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 9 training takes 0:00:07
+[2025-08-13 11:30:39 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.071)	Loss 2.5473 (2.1228)	Acc@1 20.000 (25.945)	Acc@5 40.000 (73.165)	Mem 12495MB
+[2025-08-13 11:30:39 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 73.165
+[2025-08-13 11:30:39 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:30:39 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:30:39 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:30:47 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [10/35]	eta 0:00:00 lr 0.000200	time 0.2054 (0.2188)	loss 2.1981 (2.0626)	grad_norm 4.8607 (4.5855)	mem 12495MB
+[2025-08-13 11:30:47 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 10 training takes 0:00:07
+[2025-08-13 11:30:53 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.073)	Loss 2.5384 (2.1020)	Acc@1 20.000 (25.945)	Acc@5 60.000 (75.760)	Mem 12495MB
+[2025-08-13 11:30:53 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 75.760
+[2025-08-13 11:30:53 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:30:53 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:30:53 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:31:01 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [11/35]	eta 0:00:00 lr 0.000200	time 0.2076 (0.2192)	loss 2.2014 (2.0925)	grad_norm 3.3920 (4.9718)	mem 12495MB
+[2025-08-13 11:31:01 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 11 training takes 0:00:07
+[2025-08-13 11:31:07 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.072)	Loss 2.7210 (2.1363)	Acc@1 20.000 (25.945)	Acc@5 20.000 (74.129)	Mem 12495MB
+[2025-08-13 11:31:07 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 74.129
+[2025-08-13 11:31:07 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:31:07 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:31:07 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:31:14 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [12/35]	eta 0:00:00 lr 0.000200	time 0.2065 (0.2179)	loss 2.2249 (2.0841)	grad_norm 4.2748 (4.1112)	mem 12495MB
+[2025-08-13 11:31:14 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 12 training takes 0:00:07
+[2025-08-13 11:31:20 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.071)	Loss 2.5616 (2.1321)	Acc@1 20.000 (25.945)	Acc@5 60.000 (74.203)	Mem 12495MB
+[2025-08-13 11:31:20 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 74.203
+[2025-08-13 11:31:20 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:31:20 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:31:20 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:31:28 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [13/35]	eta 0:00:00 lr 0.000200	time 0.2073 (0.2181)	loss 1.4829 (2.0825)	grad_norm 6.2357 (4.8315)	mem 12495MB
+[2025-08-13 11:31:28 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 13 training takes 0:00:07
+[2025-08-13 11:31:34 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.071)	Loss 2.6179 (2.1150)	Acc@1 20.000 (25.945)	Acc@5 40.000 (73.684)	Mem 12495MB
+[2025-08-13 11:31:34 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 73.684
+[2025-08-13 11:31:34 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:31:34 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:31:34 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:31:42 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [14/35]	eta 0:00:00 lr 0.000200	time 0.2068 (0.2184)	loss 2.5934 (2.0965)	grad_norm 9.1611 (4.6301)	mem 12495MB
+[2025-08-13 11:31:42 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 14 training takes 0:00:07
+[2025-08-13 11:31:48 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.072)	Loss 2.4956 (2.1080)	Acc@1 20.000 (25.945)	Acc@5 40.000 (74.944)	Mem 12495MB
+[2025-08-13 11:31:48 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 74.944
+[2025-08-13 11:31:48 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:31:48 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:31:48 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:31:55 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [15/35]	eta 0:00:00 lr 0.000200	time 0.1975 (0.2107)	loss 2.1620 (2.0750)	grad_norm 3.5973 (4.0715)	mem 12495MB
+[2025-08-13 11:31:55 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 15 training takes 0:00:07
+[2025-08-13 11:32:01 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.073)	Loss 2.6063 (2.1178)	Acc@1 20.000 (25.945)	Acc@5 40.000 (73.981)	Mem 12495MB
+[2025-08-13 11:32:01 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 73.981
+[2025-08-13 11:32:01 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:32:01 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:32:01 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:32:09 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [16/35]	eta 0:00:00 lr 0.000200	time 0.2059 (0.2183)	loss 1.6844 (2.0668)	grad_norm 5.8023 (5.3916)	mem 12495MB
+[2025-08-13 11:32:09 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 16 training takes 0:00:07
+[2025-08-13 11:32:15 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.072)	Loss 2.8313 (2.0719)	Acc@1 20.000 (25.945)	Acc@5 20.000 (76.279)	Mem 12495MB
+[2025-08-13 11:32:15 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 76.279
+[2025-08-13 11:32:15 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:32:15 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:32:15 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:32:22 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [17/35]	eta 0:00:00 lr 0.000200	time 0.2059 (0.2167)	loss 1.9193 (2.0682)	grad_norm 5.5730 (4.1871)	mem 12495MB
+[2025-08-13 11:32:22 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 17 training takes 0:00:07
+[2025-08-13 11:32:28 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.071)	Loss 2.7082 (2.0861)	Acc@1 20.000 (25.945)	Acc@5 20.000 (76.872)	Mem 12495MB
+[2025-08-13 11:32:28 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 76.872
+[2025-08-13 11:32:29 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:32:29 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:32:29 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:32:36 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [18/35]	eta 0:00:00 lr 0.000200	time 0.2070 (0.2230)	loss 2.0806 (2.0795)	grad_norm 4.6686 (5.1451)	mem 12495MB
+[2025-08-13 11:32:36 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 18 training takes 0:00:07
+[2025-08-13 11:32:42 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.071)	Loss 2.3578 (2.0806)	Acc@1 20.000 (26.093)	Acc@5 40.000 (75.612)	Mem 12495MB
+[2025-08-13 11:32:42 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 26.093 Acc@5 75.612
+[2025-08-13 11:32:42 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2604    1.0000    0.4132       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.4000    0.0141    0.0272       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2609      1349
+   macro avg     0.0600    0.0922    0.0400      1349
+weighted avg     0.1097    0.2609    0.1101      1349
+
+[2025-08-13 11:32:42 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 26.1%
+[2025-08-13 11:32:42 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 26.09%
+[2025-08-13 11:32:50 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [19/35]	eta 0:00:00 lr 0.000200	time 0.2078 (0.2183)	loss 1.9194 (2.1034)	grad_norm 3.7558 (4.5227)	mem 12495MB
+[2025-08-13 11:32:50 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 19 training takes 0:00:07
+[2025-08-13 11:32:56 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.073)	Loss 2.5661 (2.1190)	Acc@1 20.000 (26.316)	Acc@5 60.000 (75.982)	Mem 12495MB
+[2025-08-13 11:32:56 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 26.316 Acc@5 75.982
+[2025-08-13 11:32:56 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2608    1.0000    0.4137       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.7143    0.0352    0.0671       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2632      1349
+   macro avg     0.0886    0.0941    0.0437      1349
+weighted avg     0.1429    0.2632    0.1144      1349
+
+[2025-08-13 11:32:56 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 26.3%
+[2025-08-13 11:32:56 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 26.32%
+[2025-08-13 11:33:04 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [20/35]	eta 0:00:00 lr 0.000200	time 0.2079 (0.2206)	loss 2.4455 (2.0778)	grad_norm 5.8194 (5.5328)	mem 12495MB
+[2025-08-13 11:33:04 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 20 training takes 0:00:07
+[2025-08-13 11:33:10 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.070)	Loss 2.5636 (2.1308)	Acc@1 20.000 (26.464)	Acc@5 60.000 (73.239)	Mem 12495MB
+[2025-08-13 11:33:10 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 26.464 Acc@5 73.239
+[2025-08-13 11:33:10 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2648    0.9943    0.4183       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.2571    0.0634    0.1017       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2646      1349
+   macro avg     0.0475    0.0962    0.0473      1349
+weighted avg     0.0958    0.2646    0.1192      1349
+
+[2025-08-13 11:33:10 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 26.5%
+[2025-08-13 11:33:10 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 26.46%
+[2025-08-13 11:33:17 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [21/35]	eta 0:00:00 lr 0.000200	time 0.2067 (0.2177)	loss 1.9198 (2.0541)	grad_norm 10.4572 (7.2103)	mem 12495MB
+[2025-08-13 11:33:17 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 21 training takes 0:00:07
+[2025-08-13 11:33:23 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.070)	Loss 2.5102 (2.0997)	Acc@1 20.000 (27.798)	Acc@5 40.000 (75.760)	Mem 12495MB
+[2025-08-13 11:33:23 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 27.798 Acc@5 75.760
+[2025-08-13 11:33:23 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2728    0.9743    0.4263       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.3434    0.2394    0.2822       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2780      1349
+   macro avg     0.0560    0.1103    0.0644      1349
+weighted avg     0.1069    0.2780    0.1403      1349
+
+[2025-08-13 11:33:23 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 27.8%
+[2025-08-13 11:33:23 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 27.80%
+[2025-08-13 11:33:31 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [22/35]	eta 0:00:00 lr 0.000200	time 0.2055 (0.2173)	loss 2.0806 (2.0794)	grad_norm 6.1293 (10.0611)	mem 12495MB
+[2025-08-13 11:33:31 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 22 training takes 0:00:07
+[2025-08-13 11:33:37 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.072)	Loss 2.7237 (2.1153)	Acc@1 20.000 (25.945)	Acc@5 40.000 (75.019)	Mem 12495MB
+[2025-08-13 11:33:37 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 75.019
+[2025-08-13 11:33:37 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:33:37 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:33:37 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 27.80%
+[2025-08-13 11:33:44 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [23/35]	eta 0:00:00 lr 0.000200	time 0.2062 (0.2184)	loss 2.1054 (2.1135)	grad_norm 4.7409 (6.0400)	mem 12495MB
+[2025-08-13 11:33:44 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 23 training takes 0:00:07
+[2025-08-13 11:33:50 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.072)	Loss 2.5558 (2.0987)	Acc@1 20.000 (29.652)	Acc@5 40.000 (75.982)	Mem 12495MB
+[2025-08-13 11:33:50 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 29.652 Acc@5 75.982
+[2025-08-13 11:33:50 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2864    0.9171    0.4364       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.3465    0.5563    0.4270       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2965      1349
+   macro avg     0.0575    0.1340    0.0785      1349
+weighted avg     0.1108    0.2965    0.1582      1349
+
+[2025-08-13 11:33:50 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 29.7%
+[2025-08-13 11:33:50 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 29.65%
+[2025-08-13 11:33:58 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [24/35]	eta 0:00:00 lr 0.000200	time 0.2079 (0.2210)	loss 2.3654 (2.0512)	grad_norm 8.7540 (6.2343)	mem 12495MB
+[2025-08-13 11:33:58 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 24 training takes 0:00:07
+[2025-08-13 11:34:04 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.074)	Loss 2.8749 (2.0795)	Acc@1 0.000 (29.874)	Acc@5 40.000 (76.723)	Mem 12495MB
+[2025-08-13 11:34:04 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 29.874 Acc@5 76.723
+[2025-08-13 11:34:04 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2998    0.8514    0.4435       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.2958    0.7394    0.4225       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2987      1349
+   macro avg     0.0541    0.1446    0.0787      1349
+weighted avg     0.1089    0.2987    0.1595      1349
+
+[2025-08-13 11:34:04 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 29.9%
+[2025-08-13 11:34:04 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 29.87%
+[2025-08-13 11:34:12 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [25/35]	eta 0:00:00 lr 0.000200	time 0.2069 (0.2246)	loss 1.7541 (2.0702)	grad_norm 5.2067 (5.2634)	mem 12495MB
+[2025-08-13 11:34:12 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 25 training takes 0:00:07
+[2025-08-13 11:34:18 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.063 (0.074)	Loss 2.5681 (2.1049)	Acc@1 0.000 (27.872)	Acc@5 60.000 (76.353)	Mem 12495MB
+[2025-08-13 11:34:18 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 27.872 Acc@5 76.353
+[2025-08-13 11:34:18 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2893    0.7514    0.4178       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.2568    0.7958    0.3883       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2787      1349
+   macro avg     0.0496    0.1407    0.0733      1349
+weighted avg     0.1021    0.2787    0.1493      1349
+
+[2025-08-13 11:34:18 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 27.9%
+[2025-08-13 11:34:18 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 29.87%
+[2025-08-13 11:34:26 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [26/35]	eta 0:00:00 lr 0.000200	time 0.2067 (0.2232)	loss 2.1049 (2.0688)	grad_norm 6.7792 (5.1090)	mem 12495MB
+[2025-08-13 11:34:26 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 26 training takes 0:00:07
+[2025-08-13 11:34:32 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.063 (0.074)	Loss 2.6252 (2.0515)	Acc@1 20.000 (29.726)	Acc@5 60.000 (77.168)	Mem 12495MB
+[2025-08-13 11:34:32 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 29.726 Acc@5 77.168
+[2025-08-13 11:34:32 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2906    0.9857    0.4489       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.3457    0.3944    0.3684       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2973      1349
+   macro avg     0.0578    0.1255    0.0743      1349
+weighted avg     0.1118    0.2973    0.1553      1349
+
+[2025-08-13 11:34:32 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 29.7%
+[2025-08-13 11:34:32 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 29.87%
+[2025-08-13 11:34:40 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [27/35]	eta 0:00:00 lr 0.000200	time 0.2070 (0.2242)	loss 2.0134 (2.0309)	grad_norm 4.2061 (4.9223)	mem 12495MB
+[2025-08-13 11:34:40 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 27 training takes 0:00:07
+[2025-08-13 11:34:46 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.063 (0.071)	Loss 2.5525 (2.0712)	Acc@1 20.000 (28.540)	Acc@5 40.000 (76.798)	Mem 12495MB
+[2025-08-13 11:34:46 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 28.540 Acc@5 76.798
+[2025-08-13 11:34:46 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2804    0.9886    0.4369       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.3391    0.2746    0.3035       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2854      1349
+   macro avg     0.0563    0.1148    0.0673      1349
+weighted avg     0.1084    0.2854    0.1453      1349
+
+[2025-08-13 11:34:46 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 28.5%
+[2025-08-13 11:34:46 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 29.87%
+[2025-08-13 11:34:54 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [28/35]	eta 0:00:00 lr 0.000200	time 0.2074 (0.2211)	loss 2.1555 (2.0660)	grad_norm 8.1647 (4.6568)	mem 12495MB
+[2025-08-13 11:34:54 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 28 training takes 0:00:07
+[2025-08-13 11:35:00 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.063 (0.073)	Loss 2.6037 (2.0802)	Acc@1 20.000 (28.317)	Acc@5 40.000 (76.798)	Mem 12495MB
+[2025-08-13 11:35:00 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 28.317 Acc@5 76.798
+[2025-08-13 11:35:00 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2761    0.9886    0.4317       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.3750    0.2535    0.3025       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2832      1349
+   macro avg     0.0592    0.1129    0.0667      1349
+weighted avg     0.1111    0.2832    0.1438      1349
+
+[2025-08-13 11:35:00 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 28.3%
+[2025-08-13 11:35:00 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 29.87%
+[2025-08-13 11:35:08 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [29/35]	eta 0:00:00 lr 0.000200	time 0.2090 (0.2221)	loss 1.8419 (2.0272)	grad_norm 4.6103 (5.5286)	mem 12495MB
+[2025-08-13 11:35:08 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 29 training takes 0:00:07
+[2025-08-13 11:35:14 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.063 (0.073)	Loss 2.4906 (2.0454)	Acc@1 20.000 (30.393)	Acc@5 40.000 (77.391)	Mem 12495MB
+[2025-08-13 11:35:14 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 30.393 Acc@5 77.391
+[2025-08-13 11:35:14 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2908    0.9571    0.4461       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.3807    0.5282    0.4425       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.3039      1349
+   macro avg     0.0610    0.1350    0.0808      1349
+weighted avg     0.1155    0.3039    0.1623      1349
+
+[2025-08-13 11:35:14 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 30.4%
+[2025-08-13 11:35:14 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 30.39%
+[2025-08-13 11:35:22 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [30/35]	eta 0:00:00 lr 0.000200	time 0.2092 (0.2239)	loss 2.1046 (2.0519)	grad_norm 3.8527 (4.4197)	mem 12495MB
+[2025-08-13 11:35:22 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 30 training takes 0:00:07
+[2025-08-13 11:35:28 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.063 (0.073)	Loss 2.5418 (2.0400)	Acc@1 20.000 (31.653)	Acc@5 60.000 (77.613)	Mem 12495MB
+[2025-08-13 11:35:28 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 31.653 Acc@5 77.613
+[2025-08-13 11:35:28 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2986    0.9571    0.4552       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.4053    0.6479    0.4986       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.3165      1349
+   macro avg     0.0640    0.1459    0.0867      1349
+weighted avg     0.1201    0.3165    0.1706      1349
+
+[2025-08-13 11:35:28 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 31.7%
+[2025-08-13 11:35:28 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 31.65%
+[2025-08-13 11:35:35 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [31/35]	eta 0:00:00 lr 0.000200	time 0.1954 (0.2153)	loss 1.9622 (2.0331)	grad_norm 3.6733 (5.0518)	mem 12495MB
+[2025-08-13 11:35:35 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 31 training takes 0:00:07
+[2025-08-13 11:35:41 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.072)	Loss 2.5309 (2.0480)	Acc@1 20.000 (31.060)	Acc@5 40.000 (77.539)	Mem 12495MB
+[2025-08-13 11:35:41 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 31.060 Acc@5 77.539
+[2025-08-13 11:35:41 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2908    0.9829    0.4488       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.4518    0.5282    0.4870       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.3106      1349
+   macro avg     0.0675    0.1374    0.0851      1349
+weighted avg     0.1230    0.3106    0.1677      1349
+
+[2025-08-13 11:35:41 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 31.1%
+[2025-08-13 11:35:41 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 31.65%
+[2025-08-13 11:35:49 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [32/35]	eta 0:00:00 lr 0.000200	time 0.1953 (0.2092)	loss 1.7718 (2.0155)	grad_norm 5.2969 (6.0826)	mem 12495MB
+[2025-08-13 11:35:49 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 32 training takes 0:00:07
+[2025-08-13 11:35:55 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.072)	Loss 2.5649 (2.0526)	Acc@1 20.000 (30.615)	Acc@5 40.000 (76.872)	Mem 12495MB
+[2025-08-13 11:35:55 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 30.615 Acc@5 76.872
+[2025-08-13 11:35:55 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.3043    0.9000    0.4549       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.3121    0.6901    0.4298       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.3062      1349
+   macro avg     0.0560    0.1446    0.0804      1349
+weighted avg     0.1118    0.3062    0.1633      1349
+
+[2025-08-13 11:35:55 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 30.6%
+[2025-08-13 11:35:55 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 31.65%
+[2025-08-13 11:36:02 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [33/35]	eta 0:00:00 lr 0.000200	time 0.2081 (0.2207)	loss 1.8598 (2.0202)	grad_norm 6.8638 (5.1755)	mem 12495MB
+[2025-08-13 11:36:02 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 33 training takes 0:00:07
+[2025-08-13 11:36:09 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.062 (0.073)	Loss 2.5425 (2.0482)	Acc@1 20.000 (31.431)	Acc@5 40.000 (77.835)	Mem 12495MB
+[2025-08-13 11:36:09 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 31.431 Acc@5 77.835
+[2025-08-13 11:36:09 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.3093    0.8714    0.4566       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.3278    0.8380    0.4713       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.3143      1349
+   macro avg     0.0579    0.1554    0.0844      1349
+weighted avg     0.1148    0.3143    0.1681      1349
+
+[2025-08-13 11:36:09 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 31.4%
+[2025-08-13 11:36:09 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 31.65%
+[2025-08-13 11:36:16 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [34/35]	eta 0:00:00 lr 0.000200	time 0.2074 (0.2219)	loss 2.3146 (2.0125)	grad_norm 7.2571 (4.6890)	mem 12495MB
+[2025-08-13 11:36:16 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 34 training takes 0:00:07
+[2025-08-13 11:36:22 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.063 (0.072)	Loss 2.7170 (2.0357)	Acc@1 20.000 (31.282)	Acc@5 40.000 (78.577)	Mem 12495MB
+[2025-08-13 11:36:22 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 31.282 Acc@5 78.577
+[2025-08-13 11:36:22 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2980    0.9314    0.4515       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.3765    0.6761    0.4836       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.3128      1349
+   macro avg     0.0613    0.1461    0.0850      1349
+weighted avg     0.1169    0.3128    0.1681      1349
+
+[2025-08-13 11:36:22 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 31.3%
+[2025-08-13 11:36:22 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 31.65%
+[2025-08-13 11:36:22 CSWin_BOAT_64_24322_small_224](train.py 165): INFO Training time 0:08:42
+[2025-08-13 11:36:22 CSWin_BOAT_64_24322_small_224](train.py 88): INFO Creating model:cswin_boat/CSWin_BOAT_64_24322_small_224
+[2025-08-13 11:36:24 CSWin_BOAT_64_24322_small_224](train.py 97): INFO number of params: 54769177
+[2025-08-13 11:36:24 CSWin_BOAT_64_24322_small_224](train.py 118): INFO Start training
+[2025-08-13 11:36:53 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [0/35]	eta 0:00:00 lr 0.000041	time 14.3695 (0.4287)	loss 2.2671 (2.3316)	grad_norm 5.2873 (2.0024)	mem 12495MB
+[2025-08-13 11:36:53 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 0 training takes 0:00:29
+[2025-08-13 11:36:59 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.065 (0.074)	Loss 2.3770 (2.2696)	Acc@1 20.000 (25.945)	Acc@5 40.000 (69.088)	Mem 12495MB
+[2025-08-13 11:36:59 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 69.088
+[2025-08-13 11:36:59 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:36:59 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:36:59 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:37:14 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [1/35]	eta 0:00:00 lr 0.000081	time 0.2183 (0.2180)	loss 2.3081 (2.2599)	grad_norm 7.4498 (3.1001)	mem 12495MB
+[2025-08-13 11:37:14 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 1 training takes 0:00:14
+[2025-08-13 11:37:20 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.064 (0.073)	Loss 2.4320 (2.2149)	Acc@1 20.000 (25.945)	Acc@5 40.000 (69.088)	Mem 12495MB
+[2025-08-13 11:37:20 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 69.088
+[2025-08-13 11:37:20 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:37:20 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:37:20 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:37:35 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [2/35]	eta 0:00:00 lr 0.000120	time 0.2109 (0.2170)	loss 2.0044 (2.2067)	grad_norm 6.7992 (3.7209)	mem 12495MB
+[2025-08-13 11:37:35 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 2 training takes 0:00:14
+[2025-08-13 11:37:42 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.064 (0.074)	Loss 2.5324 (2.1754)	Acc@1 20.000 (25.945)	Acc@5 40.000 (72.202)	Mem 12495MB
+[2025-08-13 11:37:42 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 72.202
+[2025-08-13 11:37:42 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:37:42 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:37:42 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 25.95%
+[2025-08-13 11:37:56 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [3/35]	eta 0:00:00 lr 0.000160	time 0.1959 (0.2185)	loss 2.5242 (2.1700)	grad_norm 4.2992 (3.7304)	mem 12495MB
+[2025-08-13 11:37:56 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 3 training takes 0:00:14
+[2025-08-13 11:38:03 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.064 (0.072)	Loss 2.6616 (2.1270)	Acc@1 20.000 (26.019)	Acc@5 40.000 (73.684)	Mem 12495MB
+[2025-08-13 11:38:03 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 26.019 Acc@5 73.684
+[2025-08-13 11:38:03 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2602    1.0000    0.4130       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.2500    0.0070    0.0137       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2602      1349
+   macro avg     0.0464    0.0915    0.0388      1349
+weighted avg     0.0938    0.2602    0.1086      1349
+
+[2025-08-13 11:38:03 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 26.0%
+[2025-08-13 11:38:03 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 26.02%
+[2025-08-13 11:38:17 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [4/35]	eta 0:00:00 lr 0.000199	time 0.2135 (0.2117)	loss 2.0942 (2.1468)	grad_norm 5.3021 (4.3135)	mem 12495MB
+[2025-08-13 11:38:17 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 4 training takes 0:00:14
+[2025-08-13 11:38:23 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.063 (0.073)	Loss 2.5793 (2.1363)	Acc@1 20.000 (25.945)	Acc@5 40.000 (72.721)	Mem 12495MB
+[2025-08-13 11:38:23 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 25.945 Acc@5 72.721
+[2025-08-13 11:38:23 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2595    1.0000    0.4120       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.0000    0.0000    0.0000       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2595      1349
+   macro avg     0.0236    0.0909    0.0375      1349
+weighted avg     0.0673    0.2595    0.1069      1349
+
+[2025-08-13 11:38:23 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 25.9%
+[2025-08-13 11:38:23 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 26.02%
+[2025-08-13 11:38:38 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [5/35]	eta 0:00:00 lr 0.000200	time 0.2074 (0.2190)	loss 1.6967 (2.1196)	grad_norm 8.7451 (4.3178)	mem 12495MB
+[2025-08-13 11:38:38 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 5 training takes 0:00:14
+[2025-08-13 11:38:45 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.064 (0.074)	Loss 2.7764 (2.0711)	Acc@1 20.000 (29.207)	Acc@5 20.000 (77.910)	Mem 12495MB
+[2025-08-13 11:38:45 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 29.207 Acc@5 77.910
+[2025-08-13 11:38:45 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2806    0.9371    0.4319       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.3667    0.4648    0.4099       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2921      1349
+   macro avg     0.0588    0.1274    0.0765      1349
+weighted avg     0.1114    0.2921    0.1552      1349
+
+[2025-08-13 11:38:45 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 29.2%
+[2025-08-13 11:38:45 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 29.21%
+[2025-08-13 11:39:00 CSWin_BOAT_64_24322_small_224](train.py 253): INFO Train: [6/35]	eta 0:00:00 lr 0.000200	time 0.2092 (0.2203)	loss 1.8842 (2.0800)	grad_norm 8.9755 (4.9094)	mem 12495MB
+[2025-08-13 11:39:00 CSWin_BOAT_64_24322_small_224](train.py 271): INFO EPOCH 6 training takes 0:00:15
+[2025-08-13 11:39:06 CSWin_BOAT_64_24322_small_224](train.py 361): INFO TEST:	Time 0.064 (0.073)	Loss 2.7686 (2.1127)	Acc@1 20.000 (27.947)	Acc@5 40.000 (74.500)	Mem 12495MB
+[2025-08-13 11:39:06 CSWin_BOAT_64_24322_small_224](train.py 369): INFO  * Acc@1 27.947 Acc@5 74.500
+[2025-08-13 11:39:06 CSWin_BOAT_64_24322_small_224](train.py 373): INFO 
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.0000    0.0000    0.0000        78
+           1     0.2746    0.9714    0.4282       350
+           2     0.0000    0.0000    0.0000        71
+           3     0.0000    0.0000    0.0000        70
+           4     0.0000    0.0000    0.0000        62
+           5     0.0000    0.0000    0.0000        87
+           6     0.0000    0.0000    0.0000        49
+           7     0.3333    0.2606    0.2925       142
+           8     0.0000    0.0000    0.0000       124
+           9     0.0000    0.0000    0.0000       244
+          10     0.0000    0.0000    0.0000        72
+
+    accuracy                         0.2795      1349
+   macro avg     0.0553    0.1120    0.0655      1349
+weighted avg     0.1063    0.2795    0.1419      1349
+
+[2025-08-13 11:39:06 CSWin_BOAT_64_24322_small_224](train.py 154): INFO Accuracy of the network on the test images: 27.9%
+[2025-08-13 11:39:06 CSWin_BOAT_64_24322_small_224](train.py 161): INFO Max accuracy: 29.21%
